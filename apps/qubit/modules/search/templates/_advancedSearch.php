@@ -21,12 +21,19 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2"><?php echo __('Date format required: YYYYMMDD') ?></td>
+      <td colspan="2">
+        <div style="text-align:right;vertical-align:top;">
+          <span style="float:left">
+            <?php echo __('Date format required: YYYYMMDD') ?>
+          </span>
+          <span style="float:right">
+            <a href="https://www.ica-atom.org/doc/Advanced_search">Advanced search help</a>
+          </span>
+        </div>
+      </td>
     </tr>
   </table>
 </div>
-
-
 
 <table class="multiRow" style="white-space: nowrap; min-width: 660px;">
   <tbody>
