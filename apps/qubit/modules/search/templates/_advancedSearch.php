@@ -24,10 +24,10 @@
       <td colspan="2">
         <div style="text-align:right;vertical-align:top;">
           <span style="float:left">
-            <?php echo __('Date format required: YYYYMMDD') ?>
+            <?php echo __('Date format: YYYYMMDD') ?>
           </span>
           <span style="float:right">
-            <a href="https://www.ica-atom.org/doc/Advanced_search">Advanced search help</a>
+            <a href="https://www.ica-atom.org/doc/Advanced_search"><?php echo __('Advanced search help') ?></a>
           </span>
         </div>
       </td>
