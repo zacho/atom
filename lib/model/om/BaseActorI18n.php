@@ -8,7 +8,6 @@ abstract class BaseActorI18n implements ArrayAccess
     TABLE_NAME = 'actor_i18n',
 
     AUTHORIZED_FORM_OF_NAME = 'actor_i18n.AUTHORIZED_FORM_OF_NAME',
-    DATES_OF_EXISTENCE = 'actor_i18n.DATES_OF_EXISTENCE',
     HISTORY = 'actor_i18n.HISTORY',
     PLACES = 'actor_i18n.PLACES',
     LEGAL_STATUS = 'actor_i18n.LEGAL_STATUS',
@@ -26,7 +25,6 @@ abstract class BaseActorI18n implements ArrayAccess
   public static function addSelectColumns(Criteria $criteria)
   {
     $criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
-    $criteria->addSelectColumn(QubitActorI18n::DATES_OF_EXISTENCE);
     $criteria->addSelectColumn(QubitActorI18n::HISTORY);
     $criteria->addSelectColumn(QubitActorI18n::PLACES);
     $criteria->addSelectColumn(QubitActorI18n::LEGAL_STATUS);
@@ -54,8 +52,8 @@ abstract class BaseActorI18n implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[13];
-    $keys['culture'] = $row[14];
+    $keys['id'] = $row[12];
+    $keys['culture'] = $row[13];
 
     $key = serialize($keys);
     if (!isset(self::$actorI18ns[$key]))
