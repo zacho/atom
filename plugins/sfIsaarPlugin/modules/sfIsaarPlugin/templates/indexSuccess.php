@@ -63,7 +63,18 @@
 
   <?php echo link_to_if(QubitAcl::check($resource, 'update'), '<h2>'.__('Description area').'</h2>', array($resource, 'module' => 'actor', 'action' => 'edit'), array('anchor' => 'descriptionArea', 'title' => __('Edit description area'))) ?>
 
-  <?php echo render_show(__('Dates of existence'), render_value($resource->getDatesOfExistence(array('cultureFallback' => true)))) ?>
+  <div class="field">
+    <h3><?php echo __('Dates of existence') ?></h3>
+    <div>
+      <ul>
+        <?php foreach ($resource->getDatesOfExistenceEvents() as $item): ?>
+          <li>
+            <?php echo Qubit::renderDateStartEnd($item->getDate(array('cultureFallback' => true)), $item->startDate, $item->endDate) ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  </div>
 
   <?php echo render_show(__('History'), render_value($resource->getHistory(array('cultureFallback' => true)))) ?>
 

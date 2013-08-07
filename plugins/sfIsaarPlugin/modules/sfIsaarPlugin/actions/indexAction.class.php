@@ -53,7 +53,7 @@ class sfIsaarPluginIndexAction extends ActorIndexAction
       $validatorSchema->datesOfExistence = new sfValidatorString(array(
         'required' => true), array(
         'required' => $this->context->i18n->__('%1%Dates of existence%2% - This is a %3%mandatory%4% element.', array('%1%' => '<a href="http://ica-atom.org/doc/RS-2#5.2.1">', '%2%' => '</a>', '%3%' => '<a href="http://ica-atom.org/doc/RS-2#4.7">', '%4%' => '</a>'))));
-      $values['datesOfExistence'] = $this->resource->getDatesOfExistence(array('cultureFallback' => true));
+      $values['datesOfExistence'] = count($this->resource->getDatesOfExistenceEvents()) > 0 ? 'ok' : null;
 
       $validatorSchema->descriptionIdentifier = new sfValidatorString(array(
         'required' => true), array(
