@@ -73,6 +73,10 @@ class sfIsaarPluginEditAction extends ActorEditAction
 
     $this->response->setTitle("$title - {$this->response->getTitle()}");
 
+    $this->datesComponent = new sfIsaarPluginDatesComponent($this->context, 'sfIsaarPlugin', 'dates');
+    $this->datesComponent->resource = $this->resource;
+    $this->datesComponent->execute($this->request);
+
     $this->eventComponent = new sfIsaarPluginEventComponent($this->context, 'sfIsaarPlugin', 'event');
     $this->eventComponent->resource = $this->resource;
     $this->eventComponent->execute($this->request);
@@ -116,6 +120,7 @@ class sfIsaarPluginEditAction extends ActorEditAction
 
   protected function processForm()
   {
+    $this->datesComponent->processForm();
     $this->eventComponent->processForm();
     $this->relatedAuthorityRecordComponent->processForm();
 

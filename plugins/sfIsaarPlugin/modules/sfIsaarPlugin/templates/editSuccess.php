@@ -50,6 +50,8 @@
 
     <legend><?php echo __('Description area') ?></legend>
 
+    <?php echo get_partial('dates', $datesComponent->getVarHolder()->getAll()) ?>
+
     <?php echo render_field($form->datesOfExistence
       ->help(__('"Record the dates of existence of the entity being described. For corporate bodies include the date of establishment/foundation/enabling legislation and dissolution. For persons include the dates or approximate dates of birth and death or, when these dates are not known, floruit dates. Where parallel systems of dating are used, equivalences may be recorded according to relevant conventions or rules. Specify in the Rules and/or conventions element (5.4.3) the system(s) of dating used, e.g. ISO 8601." (ISAAR 5.2.1)'))
       ->label(__('Dates of existence').' <span class="form-required" title="'.__('This is a mandatory element.').'">*</span>'), $resource) ?>
