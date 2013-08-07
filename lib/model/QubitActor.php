@@ -400,6 +400,32 @@ class QubitActor extends BaseActor
     return QubitObjectTermRelation::get($criteria);
   }
 
+  /**
+   * Related events for dates of existence
+   */
+  public function getDatesOfExistenceEvents()
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitEvent::ACTOR_ID, $this->id);
+    $criteria->add(QubitEvent::INFORMATION_OBJECT_ID, null);
+
+
+    $criteria->addMultipleJoin(array(
+      array(QubitEvent::ID, QubitEventI18n::ID),
+      array(QubitEvent::SOURCE_CULTURE, QubitEventI18n::CULTURE)),
+      Criteria::LEFT_JOIN);
+
+    $criteria->add($criteria->getNewCriterion(QubitEvent::END_DATE, null, Criteria::ISNOTNULL)
+      ->addOr($criteria->getNewCriterion(QubitEvent::START_DATE, null, Criteria::ISNOTNULL))
+      ->addOr($criteria->getNewCriterion(QubitEventI18n::DATE, null, Criteria::ISNOTNULL)));
+
+    $criteria->add(QubitEvent::TYPE_ID, QubitTerm::DATES_OF_EXISTENCE_ID);
+
+    $criteria->addDescendingOrderByColumn(QubitEvent::START_DATE);
+
+    return QubitEvent::get($criteria);
+  }
+
   public function getDatesOfChanges()
   {
     //TO DO
