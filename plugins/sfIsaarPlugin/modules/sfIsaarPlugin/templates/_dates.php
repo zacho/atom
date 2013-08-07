@@ -2,7 +2,7 @@
 
 <div class="section">
 
-  <h3><?php echo __('Dates of existence') ?></h3>
+  <h3><?php echo __('Dates of existence').' <span class="form-required" title="'.__('This is a mandatory element.').'">*</span>' ?></h3>
 
   <table class="multiRow">
     <thead>
@@ -63,7 +63,7 @@
   </table>
 
   <div class="description">
-    <?php echo __('Identify and record the date(s) of the unit of description. Record as a single date or a range of dates as appropriate. Use YYYY-MM-DD format for the <em>Date</em> field. The <em>End date</em> field can be used to indicate a date range. The <em>Date display</em> field can be used to enter free-text date information.') ?>
+    <?php echo __('Record the dates of existence of the entity being described. For corporate bodies include the date of establishment/foundation/enabling legislation and dissolution. For persons include the dates or approximate dates of birth and death or, when these dates are not known, floruit dates. Where parallel systems of dating are used, equivalences may be recorded according to relevant conventions or rules. Specify in the Rules and/or conventions element (5.4.3) the system(s) of dating used, e.g. ISO 8601." (ISAAR 5.2.1)') ?>
   </div>
 
 </div>
