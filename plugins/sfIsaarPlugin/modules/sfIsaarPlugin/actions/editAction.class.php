@@ -31,7 +31,6 @@ class sfIsaarPluginEditAction extends ActorEditAction
     $NAMES = array(
       'authorizedFormOfName',
       'corporateBodyIdentifiers',
-      'datesOfExistence',
       'descriptionDetail',
       'descriptionIdentifier',
       'descriptionStatus',
