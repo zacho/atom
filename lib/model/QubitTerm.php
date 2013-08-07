@@ -32,6 +32,9 @@ class QubitTerm extends BaseTerm
     // ROOT term id
     ROOT_ID = 110,
 
+    // Dates of existence
+    DATES_OF_EXISTENCE_ID = 112,
+
     // Event type taxonomy
     CREATION_ID = 111,
     CUSTODY_ID = 113,
