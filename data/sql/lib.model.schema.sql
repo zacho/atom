@@ -59,7 +59,6 @@ DROP TABLE IF EXISTS `actor_i18n`;
 CREATE TABLE `actor_i18n`
 (
 	`authorized_form_of_name` VARCHAR(1024),
-	`dates_of_existence` VARCHAR(1024),
 	`history` TEXT,
 	`places` TEXT,
 	`legal_status` TEXT,

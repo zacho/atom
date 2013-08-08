@@ -14,7 +14,6 @@ propel:
 
   actor_i18n:
     authorized_form_of_name: varchar(1024)
-    dates_of_existence: varchar(1024)
     history: longvarchar
     places: longvarchar
     legal_status: longvarchar
