@@ -71,7 +71,9 @@
             <?php echo format_date($item->updatedAt, 'f') ?>
           <?php endif; ?>
         </td><td>
-          <?php echo $item->datesOfExistence ?>
+          <?php if (count($events = $item->getDatesOfExistenceEvents()) > 0): ?>
+            <?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>
+          <?php endif; ?>
         </td>
       </tr>
     <?php endforeach; ?>
