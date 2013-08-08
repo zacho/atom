@@ -9,8 +9,8 @@
         <?php echo link_to(render_title($item), array($item), array('title' => __('Inherited from %1%', array('%1%' => $ancestor)))) ?>
       <?php endif; ?>
 
-      <?php if (isset($item->datesOfExistence)): ?>
-        (<?php echo $item->getDatesOfExistence(array('cultureFallback' => true)) ?>)
+      <?php if (count($events = $item->getDatesOfExistenceEvents()) > 0): ?>
+        (<?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>)
       <?php endif; ?>
 
       <?php if (0 < count($resource->getCreators())): ?>

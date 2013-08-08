@@ -29,7 +29,10 @@
   <div class="field">
     <h3><?php echo __('Creator') ?></h3>
     <div>
-      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?><?php if (0 < strlen($value = $item->getDatesOfExistence(array('cultureFallback' => true)))): ?> <span class="note2">(<?php echo $value ?>)</span><?php endif; ?>
+      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?>
+      <?php if (count($events = $item->getDatesOfExistenceEvents()) > 0): ?>
+        <span class="note2">(<?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>)</span>
+      <?php endif; ?>
     </div>
   </div>
 <?php endforeach; ?>
@@ -38,7 +41,10 @@
   <div class="field">
     <h3><?php echo __('Publisher') ?></h3>
     <div>
-      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?><?php if ($value = $item->getDatesOfExistence(array('cultureFallback' => true))): ?> <span class="note2">(<?php echo $value ?>)</span><?php endif; ?>
+      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?>
+      <?php if (count($events = $item->getDatesOfExistenceEvents()) > 0): ?>
+        <span class="note2">(<?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>)</span>
+      <?php endif; ?>
     </div>
   </div>
 <?php endforeach; ?>
@@ -47,7 +53,10 @@
   <div class="field">
     <h3><?php echo __('Contributor') ?></h3>
     <div>
-      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?><?php if ($value = $item->getDatesOfExistence(array('cultureFallback' => true))): ?> <span class="note2">(<?php echo $value ?>)</span><?php endif; ?>
+      <?php echo link_to(render_title($item), array($item, 'module' => 'actor')) ?>
+      <?php if (count($events = $item->getDatesOfExistenceEvents()) > 0): ?>
+        <span class="note2">(<?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>)</span>
+      <?php endif; ?>
     </div>
   </div>
 <?php endforeach; ?>
