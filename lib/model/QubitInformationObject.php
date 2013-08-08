@@ -1290,11 +1290,17 @@ class QubitInformationObject extends BaseInformationObject
       {
         $actor->setHistory($options['history']);
       }
+
+      $actor->save();
+
       if (isset($options['dates_of_existence']))
       {
-        $actor->datesOfExistence = $options['dates_of_existence'];
+        $event = new QubitEvent;
+        $event->actorId = $actor->id;
+        $event->typeId = QubitTerm::DATES_OF_EXISTENCE_ID;
+        $event->setDate($options['dates_of_existence']);
+        $event->save();
       }
-      $actor->save();
     }
 
     if (isset($options['event_type_id']))
