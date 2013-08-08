@@ -102,7 +102,10 @@
       <h3><?php echo __('Related entity') ?></h3>
       <div>
 
-        <?php echo link_to(render_title($relatedEntity), array($relatedEntity, 'module' => ('QubitRepository' == $relatedEntity->className) ? 'repository' : 'actor')) ?><?php if (isset($relatedEntity->datesOfExistence)): ?> <span class="note2">(<?php echo render_value($relatedEntity->getDatesOfExistence(array('cultureFallback' => true))) ?>)</span><?php endif; ?>
+        <?php echo link_to(render_title($relatedEntity), array($relatedEntity, 'module' => ('QubitRepository' == $relatedEntity->className) ? 'repository' : 'actor')) ?>
+        <?php if (count($events = $relatedEntity->getDatesOfExistenceEvents()) > 0): ?>
+          <span class="note2">(<?php echo Qubit::renderDateStartEnd($events[0]->getDate(array('cultureFallback' => true)), $events[0]->startDate, $events[0]->endDate) ?>)</span>
+        <?php endif; ?>
 
         <?php echo render_show(__('Identifier of the related entity'), render_value($relatedEntity->descriptionIdentifier)) ?>
 
