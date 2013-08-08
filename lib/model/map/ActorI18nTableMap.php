@@ -37,7 +37,6 @@ class ActorI18nTableMap extends TableMap {
 		$this->setUseIdGenerator(false);
 		// columns
 		$this->addColumn('AUTHORIZED_FORM_OF_NAME', 'authorizedFormOfName', 'VARCHAR', false, 1024, null);
-		$this->addColumn('DATES_OF_EXISTENCE', 'datesOfExistence', 'VARCHAR', false, 1024, null);
 		$this->addColumn('HISTORY', 'history', 'LONGVARCHAR', false, null, null);
 		$this->addColumn('PLACES', 'places', 'LONGVARCHAR', false, null, null);
 		$this->addColumn('LEGAL_STATUS', 'legalStatus', 'LONGVARCHAR', false, null, null);

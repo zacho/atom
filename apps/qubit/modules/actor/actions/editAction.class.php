@@ -93,7 +93,6 @@ class ActorEditAction extends DefaultEditAction
 
       case 'authorizedFormOfName':
       case 'corporateBodyIdentifiers':
-      case 'datesOfExistence':
       case 'descriptionIdentifier':
       case 'institutionResponsibleIdentifier':
         $this->form->setDefault($name, $this->resource[$name]);
