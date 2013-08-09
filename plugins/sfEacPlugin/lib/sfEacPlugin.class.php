@@ -257,9 +257,39 @@ class sfEacPlugin implements ArrayAccess
 
       case 'existDates':
 
-        // TODO <date/>, <dateRange/>, <dateSet/>, <descriptiveNote/>, simple
-        // natural language parsing?
-        return '<date>'.esc_specialchars($this->resource->datesOfExistence).'</date>';
+        // TODO <descriptiveNote/>
+        $existDates = '';
+
+        foreach ($this->resource->getDatesOfExistenceEvents() as $event)
+        {
+          $existDates .= '<dateSet>';
+
+          if (0 < strlen($value = $event->getDate(array('cultureFallback' => true))))
+          {
+            $existDates .= '<date>'.esc_specialchars($value).'</date>' ;
+          }
+
+          if (isset($event->startDate) || isset($event->endDate))
+          {
+            $existDates .= '<dateRange>';
+
+            if (isset($event->startDate))
+            {
+              $existDates .= '<fromDate standardDate="'.$event->startDate.'">'.$event->startDate.'</fromDate>';
+            }
+
+            if (isset($event->endDate))
+            {
+              $existDates .= '<toDate  standardDate="'.$event->endDate.'">'.$event->endDate.'</toDate >';
+            }
+
+            $existDates .= '</dateRange>';
+          }
+
+          $existDates .= '</dateSet>';
+        }
+
+        return $existDates;
 
       case 'generalContext':
 
@@ -385,8 +415,27 @@ return;
 
       case 'existDates':
 
-        // TODO <date/>, <dateRange/>, <dateSet/>, <descriptiveNote/>
-        $this->resource->datesOfExistence = $value->text();
+        // TODO <descriptiveNote/>
+        foreach ($value->find('eac:dateSet') as $dateSet)
+        {
+          $event = new QubitEvent;
+          $event->typeId = QubitTerm::DATES_OF_EXISTENCE_ID;
+
+          if (0 < $dateSet->getElementsByTagName('date')->length)
+          {
+            $event->date = $dateSet->getElementsByTagName('date')->item(0)->nodeValue;
+          }
+
+          if (0 < $dateSet->getElementsByTagName('dateRange')->length)
+          {
+            $rangeDates = sfEacPlugin::parseDateRange($dateSet->getElementsByTagName('dateRange')->item(0));
+            var_dump($rangeDates);
+            $event->startDate = isset($rangeDates[0]) ? $rangeDates[0] : null;
+            $event->endDate = isset($rangeDates[1]) ? $rangeDates[1] : null;
+          }
+
+          $this->resource->events[] = $event;
+        }
 
         return $this;
 
