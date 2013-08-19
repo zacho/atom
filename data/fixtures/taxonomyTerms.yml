@@ -663,7 +663,7 @@ QubitTerm:
       sl: Ustvarjanje
       th: การผลิต
   QubitTerm_112:
-    taxonomy_id: 30
+    taxonomy_id: QubitTaxonomy_10
     parent_id: QubitTerm_110
     id: 112
     source_culture: en
