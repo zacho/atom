@@ -36,7 +36,6 @@ class arMigration0098
    */
   public function up($configuration)
   {
-<<<<<<< HEAD
     // Create root repository
     $object = new QubitRepository;
     $object->id = QubitRepository::ROOT_ID;
@@ -104,51 +103,6 @@ class arMigration0098
       $this->logSection('upgrade-sql', 'The user permissions menu node for repository could not be added.', null, 'ERROR');
     }
 
-=======
-    // Add new term 'dates of existence'
-    $term = new QubitTerm;
-    $term->id = QubitTerm::DATES_OF_EXISTENCE_ID;
-    $term->parentId = QubitTerm::ROOT_ID;
-    $term->taxonomyId = QubitTaxonomy::ROOT_ID;
-    $term->name = 'Dates of existence';
-    $term->culture = 'en';
-    $term->save();
-
-    // Get actors with dates of existence
-    $sql = sprintf("SELECT t1.id, dates_of_existence, culture
-      FROM %s t1
-      INNER JOIN %s t2
-      ON t1.id = t2.id
-      WHERE dates_of_existence
-      IS NOT NULL;", QubitActor::TABLE_NAME, QubitActorI18n::TABLE_NAME);
-
-    foreach (QubitPdo::fetchAll($sql) as $item)
-    {
-      $datesOfExistence[$item->id][$item->culture] = $item->dates_of_existence;
-    }
-
-    // Create dates of existence events
-    foreach ($datesOfExistence as $actorId => $dates)
-    {
-      $event = new QubitEvent;
-      $event->actorId = $actorId;
-      $event->typeId = QubitTerm::DATES_OF_EXISTENCE_ID;
-
-      foreach ($dates as $culture => $content)
-      {
-        $event->setDate($content, array('culture' => $culture));
-      }
-
-      $event->save();
-    }
-
-    // Remove dates_of_existence column from database
-    $sql = sprintf("ALTER TABLE %s
-      DROP COLUMN dates_of_existence;", QubitActorI18n::TABLE_NAME);
-
-    QubitPdo::modify($sql);
-
->>>>>>> Add migration script and install data.
     return true;
   }
 }

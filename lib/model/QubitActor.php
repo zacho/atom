@@ -409,7 +409,6 @@ class QubitActor extends BaseActor
     $criteria->add(QubitEvent::ACTOR_ID, $this->id);
     $criteria->add(QubitEvent::INFORMATION_OBJECT_ID, null);
 
-
     $criteria->addMultipleJoin(array(
       array(QubitEvent::ID, QubitEventI18n::ID),
       array(QubitEvent::SOURCE_CULTURE, QubitEventI18n::CULTURE)),
