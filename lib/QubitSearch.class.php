@@ -329,6 +329,8 @@ class QubitSearch extends xfIndexSingle
       return;
     }
 
+    $datesOfExistenceEvents = $actor->getDatesOfExistenceEvents();
+
     foreach ($actor->actorI18ns as $actorI18n)
     {
       $doc = new Zend_Search_Lucene_Document;
@@ -345,7 +347,7 @@ class QubitSearch extends xfIndexSingle
       $doc->addField($field);
 
       // Boost dates of existence
-      $field = Zend_Search_Lucene_Field::UnStored('datesOfExistence', $actorI18n->datesOfExistence);
+      $field = Zend_Search_Lucene_Field::UnStored('datesOfExistence', implode(' ', self::getDatesOfExistence($datesOfExistenceEvents, $actorI18n->culture)));
       $field->boost = 5;
       $doc->addField($field);
 
@@ -583,5 +585,38 @@ class QubitSearch extends xfIndexSingle
           'repository' => $node->getRepository()));
       }
     }
+  }
+
+  public function getDatesOfExistence($datesOfExistenceEvents, $culture)
+  {
+    $datesOfExistence = array();
+    if (0 < count($datesOfExistenceEvents))
+    {
+      foreach ($datesOfExistenceEvents as $event)
+      {
+        if (isset($event->startDate))
+        {
+          $datesOfExistence[] = $event->startDate;
+        }
+        if (isset($event->endDate))
+        {
+          $datesOfExistence[] = $event->endDate;
+        }
+
+        foreach ($event->eventI18ns as $eventI18n)
+        {
+          if ($culture != $eventI18n->culture)
+          {
+            continue;
+          }
+
+          if (isset($eventI18n->date))
+          {
+            $datesOfExistence[] = $eventI18n->date;
+          }
+        }
+      }
+    }
+    return $datesOfExistence;
   }
 }
