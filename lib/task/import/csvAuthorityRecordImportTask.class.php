@@ -167,7 +167,6 @@ EOF;
       'standardColumns' => array(
         'authorizedFormOfName',
         'corporateBodyIdentifiers',
-        'datesOfExistence',
         'history',
         'places',
         'legalStatus',
@@ -222,7 +221,8 @@ EOF;
         'telephone',
         'postalCode',
         'streetAddress',
-        'region'
+        'region',
+        'datesOfExistence'
       ),
 
       /* import logic to execute before saving actor */
@@ -348,6 +348,16 @@ EOF;
             }
 
             $info->save();
+          }
+
+          // add dates of existence event
+          if (isset($self->rowStatusVars['datesOfExistence']) && $self->rowStatusVars['datesOfExistence'])
+          {
+            $datesOfExistenceEvent = new QubitEvent;
+            $datesOfExistenceEvent->typeId = QubitTerm::DATES_OF_EXISTENCE_ID;
+            $datesOfExistenceEvent->actorId = $self->object->id;
+            $datesOfExistenceEvent->date = $self->rowStatusVars['datesOfExistence'];
+            $datesOfExistenceEvent->save();
           }
         }
       }

@@ -38,7 +38,6 @@ class qtIsaarCsv extends sfIsaarPlugin
 
     $NAMES = array(
       'authorizedFormOfName',
-      'datesOfExistence',
       'descriptionIdentifier',
       'entityType',
       'functions',
