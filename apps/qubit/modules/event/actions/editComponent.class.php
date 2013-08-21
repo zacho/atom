@@ -61,6 +61,12 @@ class EventEditComponent extends sfComponent
         $choices = array();
         foreach ($eventTypes as $item)
         {
+          // Ignore dates of existence
+          if (QubitTerm::DATES_OF_EXISTENCE_ID == $item->id)
+          {
+            continue;
+          }
+
           // Default event type is creation
           if (QubitTerm::CREATION_ID == $item->id)
           {
