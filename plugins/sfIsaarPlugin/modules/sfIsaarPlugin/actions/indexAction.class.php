@@ -27,6 +27,14 @@
 
 class sfIsaarPluginIndexAction extends ActorIndexAction
 {
+  public function checkDatesOfExistence($validator, $value)
+  {
+    if (0 == count($value))
+    {
+      throw new sfValidatorError($validator, $this->context->i18n->__('%1%Dates of existence%2% - This is a %3%mandatory%4% element.', array('%1%' => '<a href="http://ica-atom.org/doc/RS-2#5.2.1">', '%2%' => '</a>', '%3%' => '<a href="http://ica-atom.org/doc/RS-2#4.7">', '%4%' => '</a>')));
+    }
+  }
+
   public function execute($request)
   {
     parent::execute($request);
@@ -50,10 +58,8 @@ class sfIsaarPluginIndexAction extends ActorIndexAction
         'required' => $this->context->i18n->__('%1%Authorized form of name%2% - This is a %3%mandatory%4% element.', array('%1%' => '<a href="http://ica-atom.org/doc/RS-2#5.1.2">', '%2%' => '</a>', '%3%' => '<a href="http://ica-atom.org/doc/RS-2#4.7">', '%4%' => '</a>'))));
       $values['authorizedFormOfName'] = $this->resource->getAuthorizedFormOfName(array('cultureFallback' => true));
 
-      $validatorSchema->datesOfExistence = new sfValidatorString(array(
-        'required' => true), array(
-        'required' => $this->context->i18n->__('%1%Dates of existence%2% - This is a %3%mandatory%4% element.', array('%1%' => '<a href="http://ica-atom.org/doc/RS-2#5.2.1">', '%2%' => '</a>', '%3%' => '<a href="http://ica-atom.org/doc/RS-2#4.7">', '%4%' => '</a>'))));
-      $values['datesOfExistence'] = count($this->resource->getDatesOfExistenceEvents()) > 0 ? 'ok' : null;
+      $validatorSchema->datesOfExistence = new sfValidatorCallback(array('callback' => array($this, 'checkDatesOfExistence')));
+      $values['datesOfExistence'] = $this->resource->getDatesOfExistenceEvents();
 
       $validatorSchema->descriptionIdentifier = new sfValidatorString(array(
         'required' => true), array(
