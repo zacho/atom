@@ -27,17 +27,19 @@
       </tr>
     </thead><tbody>
       <?php foreach ($resource->getEvents() as $item): ?>
-        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?> related_obj_<?php echo $item->id ?>" id="<?php echo url_for(array($item, 'module' => 'event')) ?>">
-          <td>
-            <?php echo render_title($item->informationObject) ?>
-          </td><td>
-            <?php echo $item->type ?>
-          </td><td>
-            <?php echo Qubit::renderDateStartEnd($item->date, $item->startDate, $item->endDate) ?>
-          </td><td style="text-align: right">
-            <input class="multiDelete" name="deleteEvents[]" type="checkbox" value="<?php echo url_for(array($item, 'module' => 'event')) ?>"/>
-          </td>
-        </tr>
+        <?php if (isset($item->typeId) && $item->typeId != QubitTerm::DATES_OF_EXISTENCE_ID): ?>
+          <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?> related_obj_<?php echo $item->id ?>" id="<?php echo url_for(array($item, 'module' => 'event')) ?>">
+            <td>
+              <?php echo render_title($item->informationObject) ?>
+            </td><td>
+              <?php echo $item->type ?>
+            </td><td>
+              <?php echo Qubit::renderDateStartEnd($item->date, $item->startDate, $item->endDate) ?>
+            </td><td style="text-align: right">
+              <input class="multiDelete" name="deleteEvents[]" type="checkbox" value="<?php echo url_for(array($item, 'module' => 'event')) ?>"/>
+            </td>
+          </tr>
+        <?php endif; ?>
       <?php endforeach; ?>
     </tbody>
   </table>
