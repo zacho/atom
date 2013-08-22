@@ -18,7 +18,7 @@
  */
 
 /*
- * Include sub-item level "part" in the levels of description taxonomy
+ * Dates of existence changes: create term, change it into events, delete database column
  *
  * @package    AccesstoMemory
  * @subpackage migration

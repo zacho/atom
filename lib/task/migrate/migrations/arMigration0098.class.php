@@ -18,7 +18,7 @@
  */
 
 /*
- * Include sub-item level "part" in the levels of description taxonomy
+ * Add root repository and menu nodes for repository permissions
  *
  * @package    AccesstoMemory
  * @subpackage migration
