@@ -250,7 +250,7 @@ information_object:
       Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $generalNoteTypeId)"]
 
     dates:
-      XPath:  "did/unitdate"
+      XPath:  "did/unitdate[not(@type='bulk')]"
       Method: setDates
       Parameters: [$nodeValue, "$options = array('normalized_dates' => $importDOM->xpath->query('@normal', $domNode2)->item(0)->nodeValue, 'date_type' => $importDOM->xpath->query('@datechar', $domNode2)->item(0)->nodeValue)"]
 
