@@ -21,3 +21,6 @@ all:
 
   # Google Analitycs
   # google_analytics_api_key: ...
+
+  .settings:
+    logging_enabled: on

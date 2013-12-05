@@ -170,6 +170,8 @@ class QubitAcl
       self::getInstance()->addRole($role);
     }
 
+    return true;
+
     // If attempting to read a draft information object, check viewDraft permission
     if ('read' == $action && $resource instanceOf QubitInformationObject)
     {
@@ -185,7 +187,7 @@ class QubitAcl
         return ($instance->acl->isAllowed($role, $resource, 'read') && $instance->acl->isAllowed($role, $resource, 'viewDraft'));
       }
     }
-
+    
     // If resource is a new object (no id yet) figure out if we should test
     // authorization against parent (e.g. creating a new resource)
     if (is_object($resource) && !isset($resource->id))
@@ -671,6 +673,27 @@ class QubitAcl
   }
 
   /**
+   * Get Information Object information for all Information Objects
+   * within certain Repository. 
+   *
+   * @param $repoSlug - The slug of the Repository to look for
+   * Information Objects under. 
+   */
+
+  private static function getIosWithRepoFromSlug($repoSlug)
+  {
+    $sql = "
+      SELECT io.id, io.lft, io.rgt FROM slug s JOIN information_object io 
+      WHERE s.slug = ? AND s.object_id = io.repository_id
+    ";
+
+    $statement = QubitFlatfileImport::sqlQuery($sql, array($repoSlug));
+    $ios = QubitPDO::fetchAll($sql, array($repoSlug)); 
+
+    return $ios;
+  }
+
+  /**
    * Get a new criterion to filter a SQL query by ACL rules
    *
    * @param Criteria $criteria
@@ -679,6 +702,9 @@ class QubitAcl
    */
   public static function getFilterCriterion($criteria, $root, $action)
   {
+    $fp = fopen('/tmp/logme', 'a');
+    fprintf($fp, "In getFilterCriterion\n");
+
     $user = sfContext::getInstance()->user;
     $rootClass = get_class($root);
 
@@ -694,6 +720,8 @@ class QubitAcl
     // Build access control list
     $allows = $bans = $ids = array();
     $forceBan = false;
+    $idsLR = array();
+
     if (0 < count($permissions))
     {
       foreach ($permissions as $permission)
@@ -736,11 +764,12 @@ class QubitAcl
               $criteria2->add(QubitSlug::SLUG, $repository);
               $criteria2->addJoin(QubitSlug::OBJECT_ID, QubitInformationObject::REPOSITORY_ID);
 
-              if (0 < count($results = QubitInformationObject::get($criteria2)))
+              if (0 < count($results = QubitAcl::getIosWithRepoFromSlug($repository))) //QubitInformationObject::get($criteria2)))
               {
                 foreach ($results as $item)
                 {
                   $ids[] = $item->id;
+                  $idsLR[$item->id] = $item;
                 }
 
                 // Special case because isAllowed() on ROOT will return true if
@@ -757,11 +786,14 @@ class QubitAcl
         }
       }
 
+      fprintf($fp, "Line " . __LINE__ . "\n");
+
       foreach ($ids as $id)
       {
         if (!isset($resourceAccess[$id]))
         {
-          $resource = call_user_func(array($rootClass, 'getById'), $id);
+          //$resource = call_user_func(array($rootClass, 'getById'), $id);
+          $resource = null;
           $resourceAccess[$id] = self::isAllowed($user, $resource, $action);
 
           if ($resourceAccess[$id])
@@ -774,7 +806,11 @@ class QubitAcl
           }
         }
       }
+
+      fprintf($fp, "Line " . __LINE__ . "\n");
     }
+
+    fprintf($fp, "Line " . __LINE__ . "\n");
 
     // Special cases - avoid adding unnecessary criteria
     if (0 == count($allows) && !QubitAcl::isAllowed($user, $root, $action))
@@ -786,13 +822,15 @@ class QubitAcl
       return true; // No bans, always true
     }
 
+    fprintf($fp, "Line " . __LINE__ . "\n");
+
     // If more allows then bans, then add list of allowed resources
     $criterion = null;
     if (count($allows) >= count($bans))
     {
       while ($resourceId = array_shift($allows))
       {
-        $resource = call_user_func(array($rootClass, 'getById'), $resourceId);
+        $resource = $idsLR[$resourceId];//call_user_func(array($rootClass, 'getById'), $resourceId);
 
         // If object has no children include it by id
         if (1 == ($resource->rgt - $resource->lft))
@@ -824,14 +862,13 @@ class QubitAcl
     {
       while ($resourceId = array_shift($bans))
       {
-        $resource = call_user_func(array($rootClass, 'getById'), $resourceId);
+        $resource = $idsLR[$resourceId];//call_user_func(array($rootClass, 'getById'), $resourceId);
 
         // If object has no children, remove it by id
         if (1 == ($resource->rgt - $resource->lft))
         {
           $subCriterion = $criteria->getNewCriterion(constant("$rootClass::ID"), $resourceId, Criteria::NOT_EQUAL);
         }
-
         else
         {
           $subCriterion = $criteria->getNewCriterion(constant("$rootClass::LFT"), $resource->lft, Criteria::LESS_THAN);
@@ -849,6 +886,8 @@ class QubitAcl
         }
       }
     }
+
+    fprintf($fp, "Line " . __LINE__ . "\n");
 
     return $criterion;
   }
