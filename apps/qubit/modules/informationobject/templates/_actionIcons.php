@@ -53,5 +53,14 @@
       </li>
     <?php endif; ?>
 
+    <?php if($sf_user->isAuthenticated()): ?>
+      <li>
+        <a href="<?php echo url_for(array($resource, 'module' => 'informationobject', 'action' => 'findingAid')) ?>">
+          <i class="icon-upload-alt"></i>
+          <?php echo __('PDF Finding Aid') ?>
+        </a>
+      </li>
+    <?php endif; ?>
+
   </ul>
 </section>

@@ -105,6 +105,12 @@ class ObjectExportAction extends sfAction
       }
     }
 
+
+    if ($this->request->format === 'pdf')
+    {
+      return $this->renderText('RENDERING TEH PFD');
+    }
+
     // send final XML out to the browser
     return $this->renderText($this->exportDOM->saveXML());
   }
