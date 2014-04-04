@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:local="http://www.yoursite.org/namespace" xmlns:ead="urn:isbn:1-931666-22-9" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:local="http://www.yoursite.org/namespace" xmlns:ead="urn:isbn:1-931666-22-9" version="2.0" xmlns:fo="http://www.w3.org/1999/XSL/Format">
     <!--
         *******************************************************************
         *                                                                 *
@@ -7,6 +7,7 @@
         *                                                                 *
         * AUTHOR:           Winona Salesky                                *
         *                   wsalesky@gmail.com                            *
+        * MODIFIED BY:      mikeg@artefactual.com                         *
         *                                                                 *
         * DATE:             2013-08-14                                    *
         *                                                                 *
@@ -31,14 +32,21 @@
         </xsl:choose>
     </xsl:function>
 
-    <!-- 
-        Add tag names for <odd> where type="types of notes"
-    -->
-    <xsl:function name="local:oddType">
-        <xsl:param name="oddNode"/>
-        <xsl:choose>
-            <xsl:when test="$oddNode[@type] = 'publicationStatus'">Publication status</xsl:when>
-        </xsl:choose>
+    <xsl:function name="local:oddTitleNoteHeadings">
+        <xsl:param name="type"/>
+
+        <xsl:if test="$type = 'titleContinuation'">
+            <xsl:text>Continuation of title</xsl:text>
+        </xsl:if>
+        <xsl:if test="$type = 'titleStatRep'">
+            <xsl:text>Statements of responsibility</xsl:text>
+        </xsl:if>
+        <xsl:if test="$type = 'titleParallel'">
+            <xsl:text>Parallel titles and other title info</xsl:text>
+        </xsl:if>
+        <xsl:if test="$type = 'titleSource'">
+            <xsl:text>Source of title proper</xsl:text>
+        </xsl:if>
     </xsl:function>
 
     <!-- 
@@ -137,7 +145,7 @@
             </xsl:when>
             <xsl:when test="$tag = 'otherfindaid'">Finding aids</xsl:when>
             <xsl:when test="$tag = 'persname'">Personal name</xsl:when>
-            <xsl:when test="$tag = 'phystech'">Physical characteristics and technical requirements</xsl:when>
+            <xsl:when test="$tag = 'phystech'">Physical condition</xsl:when>
             <xsl:when test="$tag = 'physdesc'">Physical description</xsl:when>
             <xsl:when test="$tag = 'physfacet'">Physical facet</xsl:when>
             <xsl:when test="$tag = 'physloc'">Physical location</xsl:when>

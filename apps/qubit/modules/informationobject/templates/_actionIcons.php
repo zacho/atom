@@ -53,9 +53,8 @@
       </li>
     <?php endif; ?>
 
-    <li class="separator"><h4><?php echo __('Jobs') ?></h4></li>
-
     <?php if($sf_user->isAuthenticated()): ?>
+      <li class="separator"><h4><?php echo __('Jobs') ?></h4></li>
       <?php $path = arGenerateFindingAid::getFindingAidPath($resource->id) ?>
       <li>
         <a href="<?php echo url_for(array($resource, 'module' => 'informationobject', 'action' => 'findingAid')) ?>">
