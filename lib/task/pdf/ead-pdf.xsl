@@ -790,7 +790,7 @@
                         <xsl:if test="current()[@type='alphanumericDesignation']">Alpha-numeric designations</xsl:if>
                         <xsl:if test="current()[@type='bibSeries']">Publisher's series</xsl:if>
                         <xsl:if test="current()[@type='rights']">Rights</xsl:if>
-                        <xsl:if test="current()[@type='general']">General note</xsl:if>
+                        <!--<xsl:if test="current()[@type='general']">General note</xsl:if>-->
                         <xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if>
                     </xsl:variable>
                     <xsl:if test="string-length($otherNoteHeading) &gt; 0">
