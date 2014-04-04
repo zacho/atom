@@ -53,7 +53,7 @@
       </li>
     <?php endif; ?>
 
-    <?php if($sf_user->isAuthenticated()): ?>
+    <?php if($sf_user->isAuthenticated() && $resource->parentId == QubitInformationObject::ROOT_ID): ?>
       <li class="separator"><h4><?php echo __('Jobs') ?></h4></li>
       <?php $path = arGenerateFindingAid::getFindingAidPath($resource->id) ?>
       <li>
@@ -66,7 +66,7 @@
       <?php $findingAidStatus = arGenerateFindingAid::getStatus($resource->id); ?>
 
       <!-- Ensure file is actually there -->
-      <?php if (!file_exists($path) && $findingAidStatus === 'generated'): ?>
+      <?php if ($findingAidStatus === 'generated' && !file_exists($path)): ?>
         <?php $findingAidStatus = 'File missing'; ?>
       <?php endif; ?>
 
