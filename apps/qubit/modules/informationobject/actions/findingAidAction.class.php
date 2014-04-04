@@ -17,22 +17,32 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class FindingAidAction extends sfAction
+class InformationObjectFindingAidAction extends sfAction
 {
   // export an object w/relations as an XML document with selected schema
   public function execute($request)
   {
-    $this->form = new sfForm;
-
-    if (isset($this->getRoute()->resource))
+    if (isset($this->getRoute()->resource) && sfContext::getInstance()->user->isAuthenticated())
     {
-      $this->resource = $this->getRoute()->resource;
+      $id = $this->getRoute()->resource->id;
 
-      $this->form->setDefault('parent', $this->context->routing->generate(null, array($this->resource)));
-      $this->form->setValidator('parent', new sfValidatorString);
-      $this->form->setWidget('parent', new sfWidgetFormInputHidden);
+      // TODO: Make this use gearman.yml?
+      $gmClient = new Net_Gearman_Client('localhost:4730');
+      $gmClient->arGenerateFindingAid(array('id' => $id));
+
+      $jobStatus = QubitProperty::getOneByObjectIdAndName($id, 'finding_aid_status');
+      if ($jobStatus === null)
+      {
+        $jobStatus = new QubitProperty;
+      }
+
+      $jobStatus->setObjectId($id);
+      $jobStatus->setName('finding_aid_status');
+      $jobStatus->setScope('information_object');
+      $jobStatus->setValue('generating');
+      $jobStatus->save();
     }
 
-    return $this->renderText('RENDERING TEH PFD');
+    $this->redirect($request->getHttpHeader('referer'));
   }
 }

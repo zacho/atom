@@ -25,6 +25,7 @@
 class arGenerateFindingAid extends Net_Gearman_Job_Common
 {
   private $dispatcher = null;
+  private $resourceId = 0;
 
   public function run($options)
   {
@@ -43,19 +44,15 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     // --------------------------------------------------------------------
 
     $this->log('Generating finding aid...');
-
-    if (!is_writable(sfConfig::get('sf_web_dir') . DIRECTORY_SEPARATOR . sfConfig::get('app_upload_dir')))
-    {
-      $this->log('ERROR: Read-write access needed in {sf_web_dir}/{app_upload_dir}!');
-      return false;
-    }
+    $this->resourceId = $options['id'];
 
     try
     {
-      $resource = QubitInformationObject::getById($options['id']);
+      $resource = QubitInformationObject::getById($this->resourceId);
       if (!$resource)
       {
-        $this->log('Error: Could not find an information object with id=' . $options['id']);
+        $this->log('Error: Could not find an information object with id=' . $this->resourceId);
+        $this->setStatus(false);
         return false;
       }
 
@@ -83,6 +80,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       if ($eadFileHandle === FALSE || $foFileHandle === FALSE)
       {
         $this->log('Failed to create temporary file.');
+        $this->setStatus(false);
         return false;
       }
       
@@ -94,7 +92,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
 
       fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString));
 
-      $pdfPath = '/tmp/lol.pdf';
+      $pdfPath = sfConfig::get('sf_web_dir') . DIRECTORY_SEPARATOR . self::getFindingAidPath($this->resourceId);;
       $junk = array();
 
       exec(sprintf("java -jar '%s' -s:'%s' -xsl:'%s' -o:'%s'", 
@@ -103,6 +101,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       if ($exitCode != 0)
       {
         $this->log('Transforming the EAD with Saxon has failed');
+        $this->setStatus(false);
         return false;
       }
 
@@ -111,6 +110,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       if ($exitCode != 0)
       {
         $this->log('Converting the EAD FO to PDF has failed.');
+        $this->setStatus(false);
         return false;
       }
 
@@ -122,10 +122,12 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     catch (Exception $e)
     {
       $this->log(sprintf('Exception: %s', $e->getMessage()));
+      $this->setStatus(false);
       return false;
     }
 
     $this->log('Job finished.');
+    $this->setStatus(true);
 
     return true;
   }
@@ -155,5 +157,37 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
   {
     $meta_data = stream_get_meta_data($handle);
     return $meta_data['uri'];
+  }
+
+  private function setStatus($success)
+  {
+    $jobStatus = QubitProperty::getOneByObjectIdAndName($this->resourceId, 'finding_aid_status');
+    if ($jobStatus === null)
+    {
+      $jobStatus = new QubitProperty;
+    }
+
+    $jobStatus->setObjectId($this->resourceId);
+    $jobStatus->setName('finding_aid_status');
+    $jobStatus->setScope('information_object');
+
+    $jobStatus->setValue(($success) ? 'generated' : 'error');
+    $jobStatus->save();
+  }
+
+  public static function getStatus($id)
+  {
+    $jobStatus = QubitProperty::getOneByObjectIdAndName($id, 'finding_aid_status');
+    if ($jobStatus !== null)
+    {
+      return $jobStatus->value;
+    }
+
+    return 'none';
+  }
+
+  public static function getFindingAidPath($id)
+  {
+    return 'downloads/' . $id . '.pdf';
   }
 }
