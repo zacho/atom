@@ -512,7 +512,6 @@
                 <xsl:if test="ead:accessrestrict or ead:userestrict or
                               ead:custodhist or ead:accruals or ead:altformavail or ead:acqinfo or 
                               ead:processinfo or ead:appraisal or ead:originalsloc or 
-                              /ead:ead/ead:eadheader/ead:filedesc/ead:publicationstmt or 
                               /ead:ead/ead:eadheader/ead:revisiondesc">
                         <fo:block text-align-last="justify"> 
                             <fo:basic-link internal-destination="adminInfo">Notes</fo:basic-link>                    
@@ -542,7 +541,7 @@
                         <fo:page-number-citation ref-id="{local:buildID(ead:phystech[1])}"/>                    
                     </fo:block>
                 </xsl:if>
-                <xsl:if test="ead:odd">
+                <xsl:if test="ead:odd and not(ead:odd[@type='publicationStatus'])">
                     <fo:block text-align-last="justify"> 
                         <fo:basic-link internal-destination="{local:buildID(ead:odd[1])}"><xsl:value-of select="local:tagName(ead:odd[1])"/></fo:basic-link>                    
                         <xsl:text>&#160;&#160;</xsl:text>                    
@@ -790,7 +789,7 @@
                         <xsl:if test="current()[@type='alphanumericDesignation']">Alpha-numeric designations</xsl:if>
                         <xsl:if test="current()[@type='bibSeries']">Publisher's series</xsl:if>
                         <xsl:if test="current()[@type='rights']">Rights</xsl:if>
-                        <!--<xsl:if test="current()[@type='general']">General note</xsl:if>-->
+                        <xsl:if test="current()[@type='general']">General note</xsl:if>
                         <xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if>
                     </xsl:variable>
                     <xsl:if test="string-length($otherNoteHeading) &gt; 0">
