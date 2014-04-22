@@ -1213,7 +1213,6 @@ class QubitDigitalObject extends BaseDigitalObject
   {
     $fp = fopen('/tmp/del.log', 'a');
     $t = new QubitTimer;
-    $t->start();
 
     $criteria = new Criteria;
     $criteria->add(QubitDigitalObject::PARENT_ID, $this->id);
@@ -1223,30 +1222,21 @@ class QubitDigitalObject extends BaseDigitalObject
     // Delete children
     foreach ($children as $child)
     {
-      print "{$child->id}\n";
       foreach (QubitRelation::getBySubjectOrObjectId($child->id) as $item)
       {
-        print ';)';
-        QubitRelationQueries::deleteBySubjectId($item->id); die();
-
         $item->delete();
-        $t->stop(); fprintf($fp, "Deleted relation - %s\n", $t->elapsed()); $t->start(); 
       }
 
-      continue;
+      $t->start();
       $child->delete();
-      $t->stop(); fprintf($fp, "Deleted child - %s\n", $t->elapsed()); $t->start(); 
+      $t->stop(); fprintf($fp, "base class delete() - %s\n", $t->elapsed()); $t->start(); 
     }
-
-    print 'X_X'; die();
 
     // Delete digital asset
     if (file_exists($this->getAbsolutePath()))
     {
       unlink($this->getAbsolutePath());
     }
-
-    $t->stop(); fprintf($fp, "unlinked file - %s\n", $t->elapsed()); $t->start(); 
 
     // Prune asset directory, if empty
     self::pruneEmptyDirs(sfConfig::get('sf_web_dir').$this->path);
@@ -1256,17 +1246,13 @@ class QubitDigitalObject extends BaseDigitalObject
       $item->delete();
     }
 
-    $t->stop(); fprintf($fp, "prune empty dirs & delete relations - %s\n", $t->elapsed()); $t->start(); 
-
     // Update search index before deleting self
     if (!empty($this->informationObjectId))
     {
       QubitSearch::getInstance()->update($this->getInformationObject());
     }
 
-    $t->stop(); fprintf($fp, "update search index - %s\n", $t->elapsed()); $t->start(); 
-
-
+    $t->stop(); $t->start();
     // Delete self
     parent::delete($connection);
 

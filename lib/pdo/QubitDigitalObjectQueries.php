@@ -17,35 +17,16 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class QubitRelationQueries
+class QubitDigitalObjectQueries
 {
-  public static function deleteBySubjectId($id)
+  public static function deleteById($id)
   {
-    self::deleteByColAndValue('subject_id', $id);
+    $slug = self::getSlug($id);
+    if (isset($slug))
   }
 
-  public static function deleteByObjectId($id)
+  public static function getSlug($id)
   {
-    self::deleteByColAndValue('object_id', $id);
-  }
-
-  // ----------------------
-  // Private helper methods
-  // ----------------------
-
-  private static function deleteByColAndValue($column, $value)
-  {
-    $query = sprintf("SELECT id FROM relation WHERE %s=?", $column);
-
-    $ids = QubitPdo::fetchAll($query, array($value));
-    var_dump($ids);
-
-    /*
-    foreach ($ids as $id)
-    {
-      self::deleteByColAndId('subject_id', $id);
-    }
-    */
+    return QubitPdo::fetchOne('SELECT * FROM slug WHERE obect_id=?', array($id));
   }
 }
-
