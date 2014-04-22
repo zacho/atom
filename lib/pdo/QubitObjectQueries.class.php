@@ -17,8 +17,21 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Various raw SQL queries to manipulate objects
+ *
+ * @package    AccesstoMemory
+ * @subpackage pdo
+ * @author     Mike G <mikeg@artefactual.com>
+ */
+
 class QubitObjectQueries
 {
+  /**
+   * Delete object based on its id
+   *
+   * @param int id  The object id
+   */
   public static function deleteById($id)
   {
     QubitPdo::prepareAndExecute('DELETE FROM object WHERE id=?', array($id));

@@ -17,35 +17,62 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Various raw SQL queries to manipulate relations
+ *
+ * @package    AccesstoMemory
+ * @subpackage pdo
+ * @author     Mike G <mikeg@artefactual.com>
+ */
+
 class QubitRelationQueries
 {
+  /**
+   * Delete relation based on subject id
+   *
+   * @param int id  The subject id
+   */
   public static function deleteBySubjectId($id)
   {
     self::deleteByColAndValue('subject_id', $id);
   }
 
+  /**
+   * Delete relation based on object id
+   *
+   * @param int id  The object id
+   */
   public static function deleteByObjectId($id)
   {
     self::deleteByColAndValue('object_id', $id);
   }
 
-  // ----------------------
-  // Private helper methods
-  // ----------------------
+  /**
+   * Delete relation its id
+   *
+   * @param int id  The relation id
+   */
+  public static function deleteById($id)
+  {
+    QubitPdo::prepareAndExecute('DELETE FROM relation_i18n WHERE id=?', array($id));
+    QubitPdo::prepareAndExecute('DELETE FROM relation WHERE id=?', array($id));
+    QubitObjectQueries::deleteById($id);
+  }
 
+  /**
+   * Delete relation based on column name and value
+   *
+   * @param int id  The subject id
+   */
   private static function deleteByColAndValue($column, $value)
   {
-    $query = sprintf("SELECT id FROM relation WHERE %s=?", $column);
+    $query = sprintf('SELECT id FROM relation WHERE %s=?', $column);
 
     $ids = QubitPdo::fetchAll($query, array($value));
-    var_dump($ids);
-
-    /*
-    foreach ($ids as $id)
+    foreach ($ids as $row)
     {
-      self::deleteByColAndId('subject_id', $id);
+      self::deleteById((int)$row->id);
     }
-    */
   }
 }
 

@@ -17,16 +17,90 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Various raw SQL queries to manipulate digital objects
+ *
+ * @package    AccesstoMemory
+ * @subpackage pdo
+ * @author     Mike G <mikeg@artefactual.com>
+ */
+
 class QubitDigitalObjectQueries
 {
+  /**
+   * Delete a digital object by its id
+   *
+   * @param int id  The digital object id
+   */
   public static function deleteById($id)
   {
-    $slug = self::getSlug($id);
-    if (isset($slug))
+    $ioId = self::getInformationObjectId($id);
+
+    // Delete derivatives
+    $derivs = self::getDerivativesByParentId($id);
+    foreach ($derivs as $derivative)
+    {
+      self::deleteById($derivative->id);
+    }
+
+    // Delete associated slug
+    $slug = self::getSlugByDigitalObjectId($id);
+    if ($slug)
+    {
+      QubitPdo::prepareAndExecute('DELETE FROM slug WHERE id=?', array($slug->id));
+    }
+
+    // Delete relations
+    // TODO: Delete rights rows if relation type = 168
+    QubitRelationQueries::deleteBySubjectId($id);
+    QubitRelationQueries::deleteByObjectId($id);
+
+    // Delete the digital_object itself and the underlying object
+    QubitPdo::prepareAndExecute('DELETE FROM digital_object WHERE id=?', array($id));
+    QubitObjectQueries::deleteById($id);
+
+    // Update search index
+    if ($ioId)
+    {
+      $io = QubitInformationObject::getById($ioId);
+
+      if ($io)
+      {
+        QubitSearch::getInstance()->update($io); 
+      }
+    }
   }
 
-  public static function getSlug($id)
+  /**
+   * Get slug data given specified digital object id
+   *
+   * @param int id  The digital object id
+   * @return mixed  Digital object row data
+   */
+  public static function getSlugByDigitalObjectId($id)
   {
-    return QubitPdo::fetchOne('SELECT * FROM slug WHERE obect_id=?', array($id));
+    return QubitPdo::fetchOne('SELECT * FROM slug WHERE object_id=?', array($id));
+  }
+
+  /**
+   * Get derivatives' data given specified digital object id
+   *
+   * @param int id  The digital object id
+   * @return mixed  Derivative digital object data
+   */
+  public static function getDerivativesByParentId($id)
+  {
+    return QubitPdo::fetchAll('SELECT * FROM digital_object WHERE parent_id=?', array($id));
+  }
+
+  /**
+   * Get information object data that a digital object is attached to
+   *
+   * @param int id  The digital object id
+   * @return mixed  The information object id that this digital object is attached to
+   */
+  public static function getInformationObjectId($id)
+  {
+    return QubitPdo::fetchColumn('SELECT information_object_id FROM digital_object WHERE id=?', array($id));
   }
 }
