@@ -1214,23 +1214,10 @@ class QubitDigitalObject extends BaseDigitalObject
     $fp = fopen('/tmp/del.log', 'a');
     $t = new QubitTimer;
 
-    $criteria = new Criteria;
-    $criteria->add(QubitDigitalObject::PARENT_ID, $this->id);
-
-    $children = QubitDigitalObject::get($criteria);
-
-    // Delete children
-    foreach ($children as $child)
-    {
-      foreach (QubitRelation::getBySubjectOrObjectId($child->id) as $item)
-      {
-        $item->delete();
-      }
-
-      $t->start();
-      $child->delete();
-      $t->stop(); fprintf($fp, "base class delete() - %s\n", $t->elapsed()); $t->start(); 
-    }
+    QubitDigitalObjectQueries::deleteById($this->id);
+    $t->stop();
+    fprintf($fp, "Deleted image in %s\n", $t->elapsed());
+    fclose($fp);
 
     // Delete digital asset
     if (file_exists($this->getAbsolutePath()))
@@ -1240,24 +1227,6 @@ class QubitDigitalObject extends BaseDigitalObject
 
     // Prune asset directory, if empty
     self::pruneEmptyDirs(sfConfig::get('sf_web_dir').$this->path);
-
-    foreach (QubitRelation::getBySubjectOrObjectId($this->id) as $item)
-    {
-      $item->delete();
-    }
-
-    // Update search index before deleting self
-    if (!empty($this->informationObjectId))
-    {
-      QubitSearch::getInstance()->update($this->getInformationObject());
-    }
-
-    $t->stop(); $t->start();
-    // Delete self
-    parent::delete($connection);
-
-    $t->stop(); fprintf($fp, "base class delete() - %s\n", $t->elapsed()); $t->start(); 
-    fclose($fp);
   }
 
   /**
