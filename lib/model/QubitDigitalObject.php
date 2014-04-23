@@ -1211,13 +1211,7 @@ class QubitDigitalObject extends BaseDigitalObject
    */
   public function delete($connection = null)
   {
-    $fp = fopen('/tmp/del.log', 'a');
-    $t = new QubitTimer;
-
     QubitDigitalObjectQueries::deleteById($this->id);
-    $t->stop();
-    fprintf($fp, "Deleted image in %s\n", $t->elapsed());
-    fclose($fp);
 
     // Delete digital asset
     if (file_exists($this->getAbsolutePath()))
