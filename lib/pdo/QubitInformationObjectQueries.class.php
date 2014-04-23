@@ -28,12 +28,28 @@
 class QubitInformationObjectQueries
 {
   /**
-   * Delete information object based on its id
+   * Delete information object using raw SQL queries
    *
    * @param QubitInformationObject resource  The information object to delete
    */
-  public static function deleteByObject($resource)
+  public static function deleteByResource($resource)
   {
-    
+    // Delete related rows
+    QubitSlugQueries::deleteByObjectId($resource->id);
+    QubitRelationQueries::deleteBySubjectId($resource->id);
+    QubitRelationQueries::deleteByObjectId($resource->id);
+    QubitEventQueries::deleteByInformationObjectId($resource->id);
+    QubitStatusQueries::deleteByObjectId($resource->id);
+    QubitNoteQueries::deleteByObjectId($resource->id);
+    QubitOtherNameQueries::deleteByObjectId($resource->id);
+
+    // Remove from search index & rebuild nested set
+    QubitSearch::getInstance()->delete($resource);
+    $resource->deleteFromNestedSet();
+
+    // Delete the actual Information Object
+    QubitPdo::prepareAndExecute('DELETE FROM information_object_i18n WHERE id=?', array($resource->id));
+    QubitPdo::prepareAndExecute('DELETE FROM information_object WHERE id=?', array($resource->id));
+    QubitObjectQueries::deleteById($resource->id);
   }
 }

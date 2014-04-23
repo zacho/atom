@@ -44,11 +44,7 @@ class QubitDigitalObjectQueries
     }
 
     // Delete associated slug
-    $slug = self::getSlugByDigitalObjectId($id);
-    if ($slug)
-    {
-      QubitPdo::prepareAndExecute('DELETE FROM slug WHERE id=?', array($slug->id));
-    }
+    QubitSlugQueries::deleteByObjectId($id);
 
     // Delete relations
     // TODO: Delete rights rows if relation type = 168
@@ -69,17 +65,6 @@ class QubitDigitalObjectQueries
         QubitSearch::getInstance()->update($io); 
       }
     }
-  }
-
-  /**
-   * Get slug data given specified digital object id
-   *
-   * @param int id  The digital object id
-   * @return mixed  Digital object row data
-   */
-  public static function getSlugByDigitalObjectId($id)
-  {
-    return QubitPdo::fetchOne('SELECT * FROM slug WHERE object_id=?', array($id));
   }
 
   /**
