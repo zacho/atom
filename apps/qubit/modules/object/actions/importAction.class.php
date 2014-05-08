@@ -34,6 +34,35 @@ class ObjectImportAction extends sfAction
 
     // Import type, CSV or XML?
     $importType = $request->getParameter('importType', 'xml');
+    $importSelectRoute = array('module' => 'object', 'action' => 'importSelect', 'type' => $importType);
+
+    $fp = fopen('/tmp/lol', 'a');
+    /*
+    ob_start();
+    var_dump($files);
+    $sDump = ob_get_flush();*/
+    //fprintf($fp, "- Filename: %s\n  Tmp filename: %s\n  Size: %d\n\n", $file['name'], $file['tmp_name'], $file['size']);
+
+
+    $fileDest = sprintf(
+      '%s/metadata/%s_%s', 
+      QubitSetting::getByName('upload_dir')->__toString(),
+      md5_file($file['tmp_name']),
+      $file['name']
+    );
+
+    fprintf($fp, "%s vs. %s", $file['tmp_name'], $fileDest);
+
+    if (!rename($file['tmp_name'], $fileDest))
+    {
+      $this->errors[] = 'Failed to move temporary file ' . $file['tmp_name'] . ' into metadata folder.';
+    }
+
+    $this->redirect($importSelectRoute);
+
+    /*
+    // Import type, CSV or XML?
+    $importType = $request->getParameter('importType', 'xml');
 
     // We will use this later to redirect users back to the importSelect page
     if (isset($this->getRoute()->resource))
@@ -148,5 +177,6 @@ class ObjectImportAction extends sfAction
       $this->rootObject = $importer->getRootObject();
       $this->objectType = strtr(get_class($this->rootObject), array('Qubit' => ''));
     }
+    */
   }
 }

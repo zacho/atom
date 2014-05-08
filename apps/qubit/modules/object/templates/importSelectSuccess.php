@@ -12,6 +12,67 @@
 <?php end_slot() ?>
 
 <?php slot('content') ?>
+
+<div id="uploader" style="width:50%;">
+    <p>Your browser doesn't have Flash, Silverlight or HTML5 support.</p>
+</div>
+
+<div id="result">
+
+</div>
+
+<?php echo "<script>var ul_path='" . url_for(array('module' => 'object', 'action' => 'import')) . "';</script>"; ?>
+
+<script>
+  jQuery(window).load(function() {
+    jQuery("#uploader").plupload({
+      // General settings
+      runtimes : 'html5,html4',
+      url : ul_path,
+      style: 'list',
+
+      // Maximum file size
+      max_file_size : '2mb',
+
+      chunk_size: '1mb',
+
+      // Resize images on clientside if we can
+      resize : {
+        width : 200,
+        height : 200,
+        quality : 90,
+        crop: true // crop to exact dimensions
+      },
+
+      rename: true,
+      sortable: true,
+      dragdrop: true,
+      views: {
+        list: true,
+        thumbs: true, // Show thumbs
+        active: 'list'
+      },
+
+      init : {
+        UploadComplete: function(up, files) {
+          for (var i = 0; i < files.length; i++)
+          {
+            jQuery("#append").append("Did it!<br>");
+          }
+        }
+      }
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+<!--
   <?php if ($sf_user->hasFlash('error')): ?>
     <div class="messages error">
       <h3><?php echo __('Error encountered') ?></h3>
@@ -75,6 +136,5 @@
       </ul>
     </section>
 
-  </form>
-
+  </form>-->
 <?php end_slot() ?>
