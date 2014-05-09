@@ -41,12 +41,12 @@ class ObjectImportSelectAction extends sfAction
     switch ($this->type)
     {
       case 'csv':
-        $this->title = $this->context->i18n->__('Import a CSV file');
+        $this->title = $this->context->i18n->__('Import CSV files');
 
         break;
 
       case 'xml':
-        $this->title = $this->context->i18n->__('Import a XML file');
+        $this->title = $this->context->i18n->__('Import XML files');
 
         break;
 

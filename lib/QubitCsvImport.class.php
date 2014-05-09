@@ -68,10 +68,11 @@ class QubitCsvImport
     if (isset($this->parent))
     {
       // Example: php symfony csv:import --default-parent-slug="$sourceName" /tmp/foobar
-      $command = sprintf('php %s %s %s --quiet --source-name=%s --default-parent-slug=%s %s',
+      $command = sprintf('php %s %s %s %s --quiet --source-name=%s --default-parent-slug=%s %s',
         escapeshellarg(sfConfig::get('sf_root_dir').DIRECTORY_SEPARATOR.'symfony'),
         escapeshellarg($taskClassName),
         $commandIndexFlag,
+        $this->indexDuringImport ? '--index' : '',
         escapeshellarg($csvFile),
         escapeshellarg($this->parent->slug),
         escapeshellarg($csvFile));
@@ -79,10 +80,11 @@ class QubitCsvImport
     else
     {
       // Example: php symfony csv:import /tmp/foobar
-      $command = sprintf('php %s %s %s --quiet --source-name=%s %s',
+      $command = sprintf('php %s %s %s %s --quiet --source-name=%s %s',
         escapeshellarg(sfConfig::get('sf_root_dir').DIRECTORY_SEPARATOR.'symfony'),
         escapeshellarg($taskClassName),
         $commandIndexFlag,
+        $this->indexDuringImport ? '--index' : '',
         escapeshellarg($csvFile),
         escapeshellarg($csvFile));
     }

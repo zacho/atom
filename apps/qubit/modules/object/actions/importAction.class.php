@@ -51,12 +51,18 @@ class ObjectImportAction extends sfAction
       $file['name']
     );
 
-    fprintf($fp, "%s vs. %s", $file['tmp_name'], $fileDest);
-
-    if (!rename($file['tmp_name'], $fileDest))
+    if (!rename($file['tmp_name'], $fileDest) || !chmod($fileDest, 0644))
     {
-      $this->errors[] = 'Failed to move temporary file ' . $file['tmp_name'] . ' into metadata folder.';
+      $this->errors[] = 'Failed to move temporary file ' . $file['tmp_name'] . ' into metadata folder. Check your permissions.';
+      $this->redirect($importSelectRoute);
     }
+
+    QubitJob::runJob(
+      'arImportCsvJob',
+      array(
+        'name' => "Import CSV '" . $file['name'] . "'",
+        'path' => basename($fileDest)
+      ));
 
     $this->redirect($importSelectRoute);
 
