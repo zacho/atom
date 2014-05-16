@@ -97,14 +97,14 @@
     <!-- Styles for main sections -->
     <xsl:attribute-set name="section">
         <xsl:attribute name="margin">4pt</xsl:attribute>
-        <xsl:attribute name="padding">4pt</xsl:attribute>
+        <xsl:attribute name="padding">2pt</xsl:attribute>
     </xsl:attribute-set>
 
     <!-- Styles for table sections -->
     <xsl:attribute-set name="sectionTable">
-        <xsl:attribute name="margin">0pt</xsl:attribute>
-        <xsl:attribute name="padding">0pt</xsl:attribute>
-        <xsl:attribute name="left">0pt</xsl:attribute>
+        <xsl:attribute name="margin">4pt</xsl:attribute>
+        <xsl:attribute name="padding">4pt</xsl:attribute>
+        <xsl:attribute name="left">4pt</xsl:attribute>
     </xsl:attribute-set>
     
     <!-- Table attributes for tables with borders -->
@@ -330,7 +330,10 @@
         <fo:block><xsl:apply-templates/></fo:block>
     </xsl:template>
 
-    <xsl:template match="ead:profiledesc/ead:language"><xsl:value-of select="."/></xsl:template>
+    
+    <xsl:template match="ead:profiledesc/ead:language">
+        <xsl:value-of select="."/>
+    </xsl:template>
     <xsl:template match="ead:profiledesc/ead:creation/ead:date">
         <!-- 
             Uses local function to format date into Month, day year. 
@@ -683,7 +686,7 @@
                 <fo:table-body>
                         <!--<xsl:apply-templates select="ead:repository" mode="overview"/>-->
                         <xsl:call-template name="summaryInfoRepoName"/>
-                        <xsl:apply-templates select="ead:origination" mode="overview"/>
+                        <xsl:apply-templates select="//ead:origination" mode="overview"/>
                         <xsl:apply-templates select="ead:unittitle" mode="overview"/>    
                         <xsl:apply-templates select="ead:unitid" mode="overview"/>
                         <xsl:apply-templates select="ead:unitdate" mode="overview"/>
@@ -1099,70 +1102,16 @@
     
     <!-- Output chronlist and children in a table -->
     <xsl:template match="ead:chronlist">
-        <fo:table xsl:use-attribute-sets="tableBorder">
-            <fo:table-body>
-                <xsl:apply-templates/>
-            </fo:table-body>
-        </fo:table>
+        <xsl:apply-templates/>
     </xsl:template>
-    <xsl:template match="ead:chronlist/ead:listhead">
-        <fo:table-row xsl:use-attribute-sets="th">
-            <fo:table-cell xsl:use-attribute-sets="tdBorder">
-                <fo:block xsl:use-attribute-sets="smp">
-                    <xsl:apply-templates select="ead:head01"/>                    
-                </fo:block>
-            </fo:table-cell>
-            <fo:table-cell xsl:use-attribute-sets="tdBorder">
-                <fo:block xsl:use-attribute-sets="smp">
-                    <xsl:apply-templates select="ead:head02"/>                    
-                </fo:block>
-            </fo:table-cell>
-        </fo:table-row>
-    </xsl:template>
-    <xsl:template match="ead:chronlist/ead:head">
-        <fo:table-row>
-            <fo:table-cell number-columns-spanned="2" xsl:use-attribute-sets="th">
-                <fo:block xsl:use-attribute-sets="smp">
-                    <xsl:apply-templates/>                    
-                </fo:block>
-            </fo:table-cell>
-        </fo:table-row>
-    </xsl:template>
+
     <xsl:template match="ead:chronitem">
-        <fo:table-row>
-            <!-- Adds alternating colors to table rows -->
-            <xsl:attribute name="background-color">#fff</xsl:attribute>
-            <fo:table-cell  xsl:use-attribute-sets="tdBorder" page-break-inside="avoid">
-                <fo:block xsl:use-attribute-sets="smp">
-                    <fo:block xsl:use-attribute-sets="smp">
-
-                        <!-- Atom: If dates given for bio info, add prefix for clarification: -->
-                        <xsl:if test="string-length(ead:date)!=0">
-                            <xsl:if test="ead:date[@type='creation']">
-                                Date(s) of creation:
-                            </xsl:if>
-                            <xsl:if test="ead:date[@type='existence']">
-                                Date(s) of existence:
-                            </xsl:if>
-                        </xsl:if>
-
-                        <xsl:apply-templates select="ead:date"/>
-                    </fo:block>
-                    <xsl:apply-templates select="descendant::ead:event"/>
-                </fo:block>
-            </fo:table-cell>
-        </fo:table-row>
+        <fo:block linefeed-treatment="preserve">
+            <xsl:apply-templates select="descendant::ead:note"/>
+            <xsl:value-of select="text()"/>
+        </fo:block>
     </xsl:template>
-    <xsl:template match="ead:event">
-        <xsl:choose>
-            <xsl:when test="following-sibling::*">
-                <fo:block><xsl:apply-templates/></fo:block>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
+
     
     <!-- Formats notestmt and notes -->
     <xsl:template match="ead:notestmt">
@@ -1398,20 +1347,19 @@
     <xsl:template match="ead:archdesc/ead:dsc">
         <fo:block xsl:use-attribute-sets="sectionTable" >
             <fo:block xsl:use-attribute-sets="h2ID"><xsl:value-of select="local:tagName(.)"/></fo:block>
-            <fo:table table-layout="fixed" space-after="12pt" width="100%" font-size="12pt" 
+            <fo:table table-layout="fixed" space-after="12pt" width="100%" font-size="10pt" 
                 border-bottom="1pt solid #000" border-top="1pt solid #000" 
-                border-left="1pt solid #000" border-right="1pt solid #000" text-align="center"
+                border-left="1pt solid #000" border-right="1pt solid #000" text-align="left"
                 border-after-width.length="1pt" border-after-width.conditionality="retain"
-                border-before-width.length="1pt" border-before-width.conditionality="retain"
-                start-indent="-0.4in">
+                border-before-width.length="1pt" border-before-width.conditionality="retain">
 
-                <fo:table-column column-number="1" column-width="1in"
+                <fo:table-column column-number="1" column-width="1.5in"
                                  border-bottom="1px solid #000" border-top="1pt solid #000" 
                                  border-left="1pt solid #000" border-right="1pt solid #000"/>
 
-                <fo:table-column column-number="2" column-width="4in"
+                <fo:table-column column-number="2" column-width="2.5in"
                                  border-bottom="1px solid #000" border-top="1pt solid #000"/>
-                <fo:table-column column-number="3" column-width="1in"
+                <fo:table-column column-number="3" column-width="1.1in"
                                  border-bottom="1px solid #000" border-top="1pt solid #000"/>
                 <fo:table-column column-number="4" column-width="1.3in"
                                  border-bottom="1px solid #000" border-top="1pt solid #000"/>
@@ -1448,7 +1396,7 @@
     <xsl:template name="clevel">
         <!-- Establishes which level is being processed in order to provided indented displays. -->
         <xsl:param name="level" />
-        <xsl:variable name="clevelMargin" select="'0pt'">
+        <xsl:variable name="clevelMargin" select="'2pt'">
             <!-- Uncomment for indented series descriptions
             <xsl:choose>
                 <xsl:when test="$level = 1">4pt</xsl:when>
@@ -1500,27 +1448,26 @@
             </xsl:when>
 
             <xsl:otherwise>
-                <fo:table-row border-top="1px solid #000"> 
+                <fo:table-row border-top="1px solid #000" padding-left="2pt" margin-left="2pt"> 
                     <fo:table-cell>
                         <!-- We insert zero width spaces before dashes so text-wrap works,
                         this is a kludge due to a bug where text-wrap doesn't work, see here: 
                         http://xmlgraphics.apache.org/fop/faq.html#cells-overflow -->
                         <fo:block>
-                            <xsl:variable name="refcode" select="ead:did/ead:unitid"/>
-                            <xsl:value-of select="replace($refcode, '-', '&#x200B;-')"/>
+                            <xsl:value-of select="ead:did/ead:unitid"/>
                         </fo:block>
                     </fo:table-cell>
                     <fo:table-cell>
-                        <fo:block font-size="12"><xsl:apply-templates select="ead:did" mode="dsc"/></fo:block>
+                        <fo:block><xsl:apply-templates select="ead:did" mode="dsc"/></fo:block>
                     </fo:table-cell>
                     <fo:table-cell>
-                        <fo:block font-size="12"><xsl:value-of select="ead:did/ead:unitdate[@datechar = 'creation']"/></fo:block>
+                        <fo:block><xsl:value-of select="ead:did/ead:unitdate"/></fo:block>
                     </fo:table-cell>
                     <fo:table-cell>
-                        <fo:block font-size="12"><xsl:value-of select="(ead:accessrestrict/p | ead:accessrestrict)"/></fo:block>
+                        <fo:block><xsl:value-of select="(ead:accessrestrict/p | ead:accessrestrict)"/></fo:block>
                     </fo:table-cell>
                     <fo:table-cell>
-                        <fo:block font-size="12"><xsl:value-of select="ead:did/ead:container"/></fo:block>
+                        <fo:block><xsl:value-of select="ead:did/ead:container"/></fo:block>
                     </fo:table-cell>
                 </fo:table-row>
             </xsl:otherwise>
@@ -1531,7 +1478,7 @@
 
     <!-- Named template to generate table headers -->
     <xsl:template name="tableHeaders">
-        <fo:table-row background-color="#f7f7f9">
+        <fo:table-row background-color="#f7f7f9" padding-left="2pt" margin-left="2pt">
             <fo:table-cell number-columns-spanned="1">
                 <fo:block>
                     Ref code
@@ -1562,7 +1509,7 @@
     <!-- Formats did containers -->
     <xsl:template match="ead:container">
         <fo:table-cell>
-            <fo:block margin="4pt 0" font-size="12"><xsl:value-of select="."/></fo:block>
+            <fo:block margin="4pt 0 2pt 0" font-size="12"><xsl:value-of select="."/></fo:block>
         </fo:table-cell>
     </xsl:template>
     
@@ -1596,10 +1543,11 @@
     
     <!-- Series child elements -->
     <xsl:template match="ead:did" mode="dscSeries">    
-        <fo:block margin-bottom="4pt" margin-top="0" font-size="12">      
+        <fo:block margin-left="2pt" margin-bottom="4pt" margin-top="0" font-size="9">      
             <!--Atom: <xsl:apply-templates select="ead:repository" mode="dsc"/> -->
             <xsl:apply-templates select="ead:origination" mode="dsc"/>            
-            <xsl:apply-templates select="ead:unitdate" mode="dsc"/>            
+            <xsl:apply-templates select="ead:unitdate" mode="dsc"/>
+            <xsl:apply-templates select="following-sibling::ead:scopecontent[1]" mode="dsc"/> 
             <xsl:apply-templates select="ead:physdesc" mode="dsc"/>                    
             <xsl:apply-templates select="ead:physloc" mode="dsc"/>                       
             <xsl:apply-templates select="ead:langmaterial" mode="dsc"/>            
@@ -1617,7 +1565,6 @@
         <fo:block margin-bottom="0pt" margin-top="0" font-size="12">
             <!--Atom: <xsl:apply-templates select="ead:repository" mode="dsc"/> -->
             <xsl:apply-templates select="ead:origination" mode="dsc"/>
-            <!--<xsl:apply-templates select="ead:unitdate" mode="dsc"/>-->
             <!--<xsl:apply-templates select="ead:physdesc" mode="dsc"/>-->
             <xsl:apply-templates select="ead:physloc" mode="dsc"/>
             <xsl:apply-templates select="ead:langmaterial" mode="dsc"/>
@@ -1633,7 +1580,7 @@
     <xsl:template match="ead:unitdate" mode="did"><xsl:apply-templates/></xsl:template>
     
     <!-- Special formatting for elements in the collection inventory list -->
-    <xsl:template match="ead:repository | ead:origination | ead:unitdate | ead:unitid  
+    <xsl:template match="ead:repository | ead:origination | ead:unitdate | ead:unitid | ead:scopecontent
         | ead:physdesc | ead:physloc | ead:langmaterial | ead:materialspec | ead:container 
         | ead:abstract | ead:note" mode="dsc">
         <!--DEBUG <xsl:if test="child::*">-->
@@ -1663,7 +1610,6 @@
             <xsl:if test="@datechar"> (<xsl:value-of select="@datechar"/>)</xsl:if>
 
         </fo:block>
-        <!--</xsl:if>-->
     </xsl:template>
     <xsl:template match="ead:relatedmaterial | ead:separatedmaterial | ead:accessrestrict | ead:userestrict |
         ead:custodhist | ead:accruals | ead:altformavail | ead:acqinfo |  
