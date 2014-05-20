@@ -72,7 +72,7 @@
 
       <?php if ($findingAidStatus === 'generated'): ?>
         <li>
-          <a style="margin-left: 15px;" href="<?php echo public_path($path) ?>">
+          <a href="<?php echo public_path($path) ?>">
 
             <i class="icon-upload-alt"></i>
             <?php echo __('Download'); ?>
@@ -80,7 +80,7 @@
         </li>
       <?php else: ?>
         <li>
-          <a style="margin-left: 15px;">
+          <a>
             <i class="icon-info-sign"></i>
             <?php echo __('Status: ') . ucfirst($findingAidStatus); ?>
           </a>

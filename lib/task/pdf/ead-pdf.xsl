@@ -594,7 +594,7 @@
                                     <xsl:otherwise>
                                         <xsl:value-of select="child::*/ead:unitid"/>, 
                                         <xsl:apply-templates select="child::*/ead:unittitle"/>, 
-                                        <xsl:apply-templates select="child::*/ead:unitdate[@datechar='creation']" mode="did"/>
+                                        <xsl:apply-templates select="child::*/ead:unitdate" mode="did"/>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </fo:basic-link>
@@ -736,15 +736,17 @@
             <fo:table-cell padding-bottom="2pt">
                 <fo:block>
                     <xsl:apply-templates/>
-                    <xsl:if test="self::ead:unitdate and @datechar">
+                    <xsl:if test="self::ead:unitdate">
                         <xsl:choose>
                             <xsl:when test="@datechar = 'creation'">
-                                <xsl:text> (dates of creation)</xsl:text>
+                                <xsl:text> (date of creation)</xsl:text>
                             </xsl:when>
                             <xsl:when test="@datechar = 'accumulation'">
-                                <xsl:text> (dates of accumulation)</xsl:text>
+                                <xsl:text> (date of accumulation)</xsl:text>
                             </xsl:when>
-                            <xsl:otherwise/>
+                            <xsl:otherwise>
+                                <xsl:text> (date of creation)</xsl:text>
+                            </xsl:otherwise>
                         </xsl:choose>
                     </xsl:if>
                 </fo:block>
@@ -1543,17 +1545,25 @@
     
     <!-- Series child elements -->
     <xsl:template match="ead:did" mode="dscSeries">    
-        <fo:block margin-left="2pt" margin-bottom="4pt" margin-top="0" font-size="9">      
+        <fo:block margin-left="2pt" margin-bottom="4pt" margin-top="0" font-size="9" >      
             <!--Atom: <xsl:apply-templates select="ead:repository" mode="dsc"/> -->
             <xsl:apply-templates select="ead:origination" mode="dsc"/>            
             <xsl:apply-templates select="ead:unitdate" mode="dsc"/>
             <xsl:apply-templates select="following-sibling::ead:scopecontent[1]" mode="dsc"/> 
-            <xsl:apply-templates select="ead:physdesc" mode="dsc"/>                    
-            <xsl:apply-templates select="ead:physloc" mode="dsc"/>                       
+            <!--
+            <xsl:if test="ead:physdesc">
+              <fo:block xsl:use-attribute-sets="smpDsc" whitespace-treatment="preserve" linefeed-treatment="preserve">
+                  <fo:inline text-decoration="underline">Physical description</fo:inline>: 
+                  <fo:block/><xsl:value-of select="ead:physdesc"/><fo:inline>&#xA;</fo:inline>
+              </fo:block>
+            </xsl:if> -->
+            <xsl:apply-templates select="ead:physdesc" mode="dsc"/> 
+            <xsl:apply-templates select="ead:physloc" mode="dsc"/> 
             <xsl:apply-templates select="ead:langmaterial" mode="dsc"/>            
             <xsl:apply-templates select="ead:materialspec" mode="dsc"/>            
             <xsl:apply-templates select="ead:abstract" mode="dsc"/>             
             <xsl:apply-templates select="ead:note" mode="dsc"/>
+            <xsl:apply-templates select="ead:odd" mode="dsc"/>
         </fo:block>
     </xsl:template>
     
@@ -1583,7 +1593,7 @@
     <xsl:template match="ead:repository | ead:origination | ead:unitdate | ead:unitid | ead:scopecontent
         | ead:physdesc | ead:physloc | ead:langmaterial | ead:materialspec | ead:container 
         | ead:abstract | ead:note" mode="dsc">
-        <!--DEBUG <xsl:if test="child::*">-->
+
         <fo:block xsl:use-attribute-sets="smpDsc">
             <fo:inline text-decoration="underline">
             <xsl:choose>
@@ -1608,7 +1618,7 @@
                 </xsl:otherwise>
             </xsl:choose></fo:inline>: <xsl:apply-templates/>
             <xsl:if test="@datechar"> (<xsl:value-of select="@datechar"/>)</xsl:if>
-
+            <xsl:if test="name()='unitdate'"> (date of creation)</xsl:if>
         </fo:block>
     </xsl:template>
     <xsl:template match="ead:relatedmaterial | ead:separatedmaterial | ead:accessrestrict | ead:userestrict |
