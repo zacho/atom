@@ -31,7 +31,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
   {
     $this->dispatcher = sfContext::getInstance()->getEventDispatcher();
 
-    // Our EAD generation code requires these variables to be 
+    // Our EAD generation code requires these variables to be
     // defined when running:
 
     $appRoot = dirname(__FILE__) . '/../..';
@@ -83,19 +83,20 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
         $this->setStatus(false);
         return false;
       }
-      
+
       $eadFilePath = $this->getTmpFilePath($eadFileHandle);
       $foFilePath = $this->getTmpFilePath($foFileHandle);
 
       $eadXslFilePath = $appRoot . '/lib/task/pdf/ead-pdf.xsl';
       $saxonPath = $appRoot . '/lib/task/pdf/saxon9he.jar';
 
-      fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString));
+      fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString, 
+        isset($options['url']) ? $options['url'] : null));
 
       $pdfPath = sfConfig::get('sf_web_dir') . DIRECTORY_SEPARATOR . self::getFindingAidPath($this->resourceId);;
       $junk = array();
 
-      exec(sprintf("java -jar '%s' -s:'%s' -xsl:'%s' -o:'%s'", 
+      exec(sprintf("java -jar '%s' -s:'%s' -xsl:'%s' -o:'%s'",
         $saxonPath, $eadFilePath, $eadXslFilePath, $foFilePath), $junk, $exitCode);
 
       if ($exitCode != 0)
@@ -132,11 +133,18 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     return true;
   }
 
-  private function fixHeader($xmlString)
+  public static function fixHeader($xmlString, $url = null)
   {
     // Apache FOP requires certain namespaces to be included in the XML in order to process it.
-    return preg_replace('(<ead .*?>|<ead>)', '<ead xmlns:ns2="http://www.w3.org/1999/xlink" ' . 
-      'xmlns="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">', $xmlString);
+    $xmlString = preg_replace('(<ead .*?>|<ead>)', '<ead xmlns:ns2="http://www.w3.org/1999/xlink" ' .
+        'xmlns="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">', $xmlString);
+
+    if ($url !== null)
+    {
+      $xmlString = preg_replace('/<eadid(.*?)url=\".*?\"(.*?)>/', '<eadid$1url="' . $url . '"$2>', $xmlString);
+    }
+
+    return $xmlString;
   }
 
   private function log($message)

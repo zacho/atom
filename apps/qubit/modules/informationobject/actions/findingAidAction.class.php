@@ -28,7 +28,10 @@ class InformationObjectFindingAidAction extends sfAction
 
       // TODO: Make this use gearman.yml?
       $gmClient = new Net_Gearman_Client('localhost:4730');
-      $gmClient->arGenerateFindingAid(array('id' => $id));
+      $gmClient->arGenerateFindingAid(array(
+        'id' => $id,
+        'url' => $request->getHttpHeader('referer')
+      ));
 
       $jobStatus = QubitProperty::getOneByObjectIdAndName($id, 'finding_aid_status');
       if ($jobStatus === null)

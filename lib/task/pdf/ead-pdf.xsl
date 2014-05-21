@@ -778,8 +778,8 @@
         <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:revisiondesc"/>
     -->
     <xsl:template name="otherNotes">
-        <fo:block xsl:use-attribute-sets="h3ID">Other notes</fo:block>
         <xsl:if test="ead:odd">
+            <fo:block xsl:use-attribute-sets="h3ID">Other notes</fo:block>
             <fo:list-block xsl:use-attribute-sets="section">
                 <xsl:for-each select="ead:odd">
                     <xsl:variable name="otherNoteHeading">
@@ -818,6 +818,8 @@
             </fo:list-block>
         </xsl:if>
     </xsl:template>
+
+
 
     <!-- Adds space between extents -->
     <xsl:template match="ead:extent"><xsl:apply-templates/>&#160;</xsl:template>      
@@ -1532,7 +1534,11 @@
                     <xsl:when test="../@level='subgrp'">Subgroup <xsl:value-of select="ead:unitid"/>: </xsl:when>
                     <xsl:otherwise>
                         <xsl:if test="../@otherlevel">
-                            <xsl:value-of select="../@otherlevel"/><xsl:text> </xsl:text>
+                            <xsl:call-template name="ucfirst">
+                                <xsl:with-param name="value" select="../@otherlevel"/>
+                            </xsl:call-template>
+                            <xsl:text> </xsl:text>
+                            <!--<xsl:value-of select="../@otherlevel"/><xsl:text> </xsl:text>-->
                         </xsl:if>
                         <xsl:value-of select="ead:unitid"/>: </xsl:otherwise>
                 </xsl:choose>
@@ -1550,13 +1556,6 @@
             <xsl:apply-templates select="ead:origination" mode="dsc"/>            
             <xsl:apply-templates select="ead:unitdate" mode="dsc"/>
             <xsl:apply-templates select="following-sibling::ead:scopecontent[1]" mode="dsc"/> 
-            <!--
-            <xsl:if test="ead:physdesc">
-              <fo:block xsl:use-attribute-sets="smpDsc" whitespace-treatment="preserve" linefeed-treatment="preserve">
-                  <fo:inline text-decoration="underline">Physical description</fo:inline>: 
-                  <fo:block/><xsl:value-of select="ead:physdesc"/><fo:inline>&#xA;</fo:inline>
-              </fo:block>
-            </xsl:if> -->
             <xsl:apply-templates select="ead:physdesc" mode="dsc"/> 
             <xsl:apply-templates select="ead:physloc" mode="dsc"/> 
             <xsl:apply-templates select="ead:langmaterial" mode="dsc"/>            
@@ -1564,18 +1563,37 @@
             <xsl:apply-templates select="ead:abstract" mode="dsc"/>             
             <xsl:apply-templates select="ead:note" mode="dsc"/>
             <xsl:apply-templates select="ead:odd" mode="dsc"/>
+            <xsl:apply-templates select="following-sibling::ead:controlaccess" mode="dsc"/>
         </fo:block>
+
+
+        <!-- Try to handle EAD tags in RAD order... -->
+        <xsl:call-template name="titleNotes"/>
+        <xsl:apply-templates select="ead:phystech"/>
+        <xsl:apply-templates select="ead:acqinfo"/>
+        <xsl:apply-templates select="ead:arrangement"/>
+        <xsl:apply-templates select="ead:originalsloc"/>
+        <xsl:apply-templates select="ead:altformavail"/>
+        <xsl:apply-templates select="ead:accessrestrict"/>
+        <xsl:apply-templates select="ead:userestrict"/>
+        <xsl:apply-templates select="ead:otherfindaid"/>
+        <xsl:apply-templates select="ead:relatedmaterial"/>
+        <xsl:apply-templates select="ead:accruals"/> 
+        <xsl:call-template name="otherNotes"/>
     </xsl:template>
     
     <!-- Single row unittitles and all other clevel elements -->
     <xsl:template match="ead:did" mode="dsc">
         <fo:block margin-bottom="0">
-            <xsl:apply-templates select="ead:unittitle"/>
+            <xsl:if test="parent::ead:c[@level]">
+                <xsl:call-template name="ucfirst">
+                    <xsl:with-param name="value" select="parent::ead:c/@level"/>
+                </xsl:call-template>
+            </xsl:if>
+            - <xsl:apply-templates select="ead:unittitle"/>
         </fo:block> 
         <fo:block margin-bottom="0pt" margin-top="0" font-size="12">
-            <!--Atom: <xsl:apply-templates select="ead:repository" mode="dsc"/> -->
             <xsl:apply-templates select="ead:origination" mode="dsc"/>
-            <!--<xsl:apply-templates select="ead:physdesc" mode="dsc"/>-->
             <xsl:apply-templates select="ead:physloc" mode="dsc"/>
             <xsl:apply-templates select="ead:langmaterial" mode="dsc"/>
             <xsl:apply-templates select="ead:materialspec" mode="dsc"/>
@@ -1583,6 +1601,7 @@
             <xsl:apply-templates select="ead:note" mode="dsc"/>
         </fo:block>
     </xsl:template>
+
     <!-- Formats unitdates -->
     <xsl:template match="ead:unitdate[@type = 'bulk']" mode="did">
         (<xsl:apply-templates/>)
