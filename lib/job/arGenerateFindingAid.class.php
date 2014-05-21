@@ -133,7 +133,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     return true;
   }
 
-  public static function fixHeader($xmlString, $url = null)
+  private static function fixHeader($xmlString, $url = null)
   {
     // Apache FOP requires certain namespaces to be included in the XML in order to process it.
     $xmlString = preg_replace('(<ead .*?>|<ead>)', '<ead xmlns:ns2="http://www.w3.org/1999/xlink" ' .
@@ -141,6 +141,9 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
 
     if ($url !== null)
     {
+      // Since we call the EAD generation from inside Symfony and not as part as a web request,
+      // the url was returning symfony://weirdurlhere. We can get around this by passing the referring url into
+      // the job as an option when the user clicks 'generate' and replace the url in the EAD manually. 
       $xmlString = preg_replace('/<eadid(.*?)url=\".*?\"(.*?)>/', '<eadid$1url="' . $url . '"$2>', $xmlString);
     }
 
