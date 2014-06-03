@@ -1608,9 +1608,23 @@
     </xsl:template>
     <xsl:template match="ead:unitdate" mode="did"><xsl:apply-templates/></xsl:template>
 
+    <xsl:template match="ead:langmaterial" mode="dsc">
+        <fo:block xsl:use-attribute-sets="smpDsc">
+            <fo:inline text-decoration="underline">
+                <xsl:value-of select="local:tagName(.)"/>
+            </fo:inline>:<fo:block></fo:block>
+
+            <xsl:for-each select="ead:language">
+                <fo:block margin="4pt">
+                    <xsl:value-of select="."/>
+                </fo:block>
+            </xsl:for-each>
+        </fo:block>
+    </xsl:template>
+
     <!-- Special formatting for elements in the collection inventory list -->
     <xsl:template match="ead:repository | ead:origination | ead:unitdate | ead:unitid | ead:scopecontent
-        | ead:physdesc | ead:physloc | ead:langmaterial | ead:materialspec | ead:container
+        | ead:physdesc | ead:physloc | ead:materialspec | ead:container
         | ead:abstract | ead:note | ead:phystech | ead:acqinfo | ead:arrangement | ead:originalsloc
         | ead:altformavail | ead:accessrestrict | ead:userestrict | ead:otherfindaid | ead:relatedmaterial
         | ead:accruals | ead:odd" mode="dsc">

@@ -246,6 +246,7 @@
         List based on the ISO 639-2b three-letter language codes (http://www.loc.gov/standards/iso639-2/php/code_list.php).
     -->
     <xsl:template match="ead:language">
+        <xsl:param name="prefix"/>
         <fo:block linefeed-treatment="preserve">
             <xsl:variable name="lod" select="'Language of description: '"/>
             <xsl:variable name="break">&#10;</xsl:variable>
