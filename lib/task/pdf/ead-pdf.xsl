@@ -819,7 +819,37 @@
         </xsl:if>
     </xsl:template>
 
-
+    <xsl:template name="otherNotesSeries">
+        <xsl:if test="following-sibling::ead:odd">
+            <xsl:for-each select="following-sibling::ead:odd">
+                <xsl:variable name="otherNoteHeading">
+                    <xsl:if test="current()[@type='levelOfDetail']">Level of detail</xsl:if>
+                    <xsl:if test="current()[@type='statusDescription']">Status description</xsl:if>
+                    <xsl:if test="current()[@type='descriptionIdentifier']">Description identifier</xsl:if>
+                    <xsl:if test="current()[@type='institutionIdentifier']">Institution identifier</xsl:if>
+                    <xsl:if test="current()[@type='edition']">Edition</xsl:if>
+                    <xsl:if test="current()[@type='physDesc']">Physical description</xsl:if>
+                    <xsl:if test="current()[@type='conservation']">Conservation</xsl:if>
+                    <xsl:if test="current()[@type='material']">Accompanying material</xsl:if>
+                    <xsl:if test="current()[@type='alphanumericDesignation']">Alpha-numeric designations</xsl:if>
+                    <xsl:if test="current()[@type='bibSeries']">Publisher's series</xsl:if>
+                    <xsl:if test="current()[@type='rights']">Rights</xsl:if>
+                    <xsl:if test="current()[@type='general']">General note</xsl:if>
+                    <xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if>
+                </xsl:variable>
+                <xsl:if test="string-length($otherNoteHeading) &gt; 0">
+                    <fo:block font-size="12" padding="2" margin="2">
+                        <!-- We have other <odd> elements used elsewhere, such as title notes.
+                             only print the <odd> elements we've *handled* here in this section. -->
+                        <fo:inline text-decoration="underline" margin="2">
+                            <xsl:value-of select="$otherNoteHeading"/>
+                        </fo:inline>
+                        <xsl:text>: </xsl:text><fo:block></fo:block><fo:block margin="4" padding="4"><xsl:value-of select="."/></fo:block>
+                    </fo:block>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:template>
 
     <!-- Adds space between extents -->
     <xsl:template match="ead:extent"><xsl:apply-templates/>&#160;</xsl:template>
@@ -1578,7 +1608,7 @@
             <xsl:apply-templates select="following-sibling::ead:otherfindaid" mode="dsc"/>
             <xsl:apply-templates select="following-sibling::ead:relatedmaterial" mode="dsc"/>
             <xsl:apply-templates select="following-sibling::ead:accruals" mode="dsc"/>
-            <!--<xsl:call-template name="otherNotes"/>-->
+            <xsl:call-template name="otherNotesSeries"/>
         </fo:block>
     </xsl:template>
 
