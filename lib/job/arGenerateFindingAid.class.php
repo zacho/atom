@@ -38,7 +38,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     $this->getDependencies($appRoot);
 
     $iso639convertor = new fbISO639_Map;
-    $eadLevels = array('class', 'collection', 'file', 'fonds', 'item', 'otherlevel', 
+    $eadLevels = array('class', 'collection', 'file', 'fonds', 'item', 'otherlevel',
       'recordgrp', 'series', 'subfonds', 'subgrp', 'subseries');
 
     // --------------------------------------------------------------------
@@ -60,9 +60,10 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       $exportLanguage = sfContext::getInstance()->user->getCulture();
       $sourceLanguage = $resource->getSourceCulture();
 
-      $ead = new sfEadPlugin($resource);
+      //$ead = new sfEadPlugin($resource);
 
       // Kludge mirrored from export:bulk task
+      /*
       ob_start();
       include $appRoot . '/plugins/sfEadPlugin/modules/sfEadPlugin/templates/indexSuccess.xml.php';
       $eadFileString = ob_get_contents();
@@ -73,9 +74,14 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
         $this->log('Error generating EAD file.');
         return false;
       }
-
+      */
       $eadFileHandle = tmpfile();
       $foFileHandle = tmpfile();
+
+      error_reporting(E_ALL);
+      $exportTask = new eadExportTask($this->dispatcher, new sfFormatter);
+      $exportTask->run("--criteria=' i.id=$resource->id' /tmp/ead/");
+      die;
 
       if ($eadFileHandle === FALSE || $foFileHandle === FALSE)
       {
@@ -90,7 +96,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       $eadXslFilePath = $appRoot . '/lib/task/pdf/ead-pdf.xsl';
       $saxonPath = $appRoot . '/lib/task/pdf/saxon9he.jar';
 
-      fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString, 
+      fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString,
         isset($options['url']) ? $options['url'] : null));
 
       $pdfPath = sfConfig::get('sf_web_dir') . DIRECTORY_SEPARATOR . self::getFindingAidPath($this->resourceId);;
@@ -143,7 +149,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
     {
       // Since we call the EAD generation from inside Symfony and not as part as a web request,
       // the url was returning symfony://weirdurlhere. We can get around this by passing the referring url into
-      // the job as an option when the user clicks 'generate' and replace the url in the EAD manually. 
+      // the job as an option when the user clicks 'generate' and replace the url in the EAD manually.
       $xmlString = preg_replace('/<eadid(.*?)url=\".*?\"(.*?)>/', '<eadid$1url="' . $url . '"$2>', $xmlString);
     }
 

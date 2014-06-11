@@ -40,7 +40,7 @@ class eadExportTask extends sfBaseTask
     ));
 
     $this->addOptions(array(
-      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', 'qubit'), 
+      new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', 'qubit'),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'cli'),
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'),
       new sfCommandOption('rows-until-update', null, sfCommandOption::PARAMETER_OPTIONAL, 'Output total rows imported every n rows.'),
@@ -69,12 +69,12 @@ class eadExportTask extends sfBaseTask
 
     $appRoot = dirname(__FILE__) .'/../..';
 
-    include($appRoot .'/plugins/sfEadPlugin/lib/sfEadPlugin.class.php');
-    include($appRoot .'/vendor/symfony/lib/helper/UrlHelper.php');
-    include($appRoot .'/vendor/symfony/lib/helper/I18NHelper.php');
-    include($appRoot .'/vendor/FreeBeerIso639Map.php');
-    include($appRoot .'/vendor/symfony/lib/helper/EscapingHelper.php');
-    include($appRoot .'/lib/helper/QubitHelper.php');
+    require_once($appRoot .'/plugins/sfEadPlugin/lib/sfEadPlugin.class.php');
+    require_once($appRoot .'/vendor/symfony/lib/helper/UrlHelper.php');
+    require_once($appRoot .'/vendor/symfony/lib/helper/I18NHelper.php');
+    require_once($appRoot .'/vendor/FreeBeerIso639Map.php');
+    require_once($appRoot .'/vendor/symfony/lib/helper/EscapingHelper.php');
+    require_once($appRoot .'/lib/helper/QubitHelper.php');
 
     $iso639convertor = new fbISO639_Map;
     $eadLevels = array('class', 'collection', 'file', 'fonds', 'item', 'otherlevel', 'recordgrp', 'series', 'subfonds', 'subgrp', 'subseries');
