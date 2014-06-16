@@ -30,16 +30,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
   public function run($options)
   {
     $this->dispatcher = sfContext::getInstance()->getEventDispatcher();
-
-    // Our EAD generation code requires these variables to be
-    // defined when running:
-
     $appRoot = dirname(__FILE__) . '/../..';
-    $this->getDependencies($appRoot);
-
-    $iso639convertor = new fbISO639_Map;
-    $eadLevels = array('class', 'collection', 'file', 'fonds', 'item', 'otherlevel',
-      'recordgrp', 'series', 'subfonds', 'subgrp', 'subseries');
 
     // --------------------------------------------------------------------
 
@@ -147,15 +138,6 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
   private function log($message)
   {
     $this->dispatcher->notify(new sfEvent($this, 'gearman.worker.log', array('message' => $message)));
-  }
-
-  private function getDependencies($appRoot)
-  {
-    require_once $appRoot . '/vendor/symfony/lib/helper/UrlHelper.php';
-    require_once $appRoot . '/vendor/symfony/lib/helper/I18NHelper.php';
-    require_once $appRoot . '/vendor/FreeBeerIso639Map.php';
-    require_once $appRoot . '/vendor/symfony/lib/helper/EscapingHelper.php';
-    require_once $appRoot . '/lib/helper/QubitHelper.php';
   }
 
   private function getTmpFilePath($handle)
