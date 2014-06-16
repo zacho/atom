@@ -36,7 +36,7 @@ class eadExportTask extends sfBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('folder', sfCommandArgument::REQUIRED, 'The destination folder for XML export files.')
+      new sfCommandArgument('path', sfCommandArgument::REQUIRED, 'The destination path for XML export the file(s).')
     ));
 
     $this->addOptions(array(
@@ -45,7 +45,8 @@ class eadExportTask extends sfBaseTask
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'),
       new sfCommandOption('rows-until-update', null, sfCommandOption::PARAMETER_OPTIONAL, 'Output total rows imported every n rows.'),
       new sfCommandOption('skip-rows', null, sfCommandOption::PARAMETER_OPTIONAL, 'Skip n rows before importing.'),
-      new sfCommandOption('criteria', null, sfCommandOption::PARAMETER_OPTIONAL, 'Export criteria')
+      new sfCommandOption('criteria', null, sfCommandOption::PARAMETER_OPTIONAL, 'Export criteria'),
+      new sfCommandOption('single-id', null, sfCommandOption::PARAMETER_OPTIONAL, 'Export an EAD file for a single fonds or collection based on id')
     ));
   }
 
@@ -54,14 +55,14 @@ class eadExportTask extends sfBaseTask
    */
   public function execute($arguments = array(), $options = array())
   {
-    if (!is_dir($arguments['folder']))
+    if (!is_dir($arguments['path']) && !isset($options['single-id']))
     {
       throw new sfException('You must specify a valid folder');
     }
 
-    if (!is_writable($arguments['folder']))
+    if (!is_writable($arguments['path']) && !isset($options['single-id']))
     {
-      throw new sfException("Can't write to this folder");
+      throw new sfException("Can't write to this path");
     }
 
     $databaseManager = new sfDatabaseManager($this->configuration);
@@ -89,11 +90,24 @@ class eadExportTask extends sfBaseTask
       $whereClause .= ' AND '. $options['criteria'];
     }
 
-    $sql = "SELECT * FROM information_object i INNER JOIN information_object_i18n i18n ON i.id=i18n.id WHERE ". $whereClause;
-
-    foreach($conn->query($sql, PDO::FETCH_ASSOC) as $row)
+    if (isset($options['single-id']))
     {
-      $resource = QubitInformationObject::getById($row['id']);
+      $ids = array($options['single-id']);
+    }
+    else
+    {
+      $sql = "SELECT * FROM information_object i INNER JOIN information_object_i18n i18n ON i.id=i18n.id WHERE ". $whereClause;
+      $ids = array();
+
+      foreach ($conn->query($sql, PDO::FETCH_ASSOC) as $row)
+      {
+        $ids[] = $row['id'];
+      }
+    }
+
+    foreach($ids as $id)
+    {
+      $resource = QubitInformationObject::getById($id);
 
       // Determine language(s) used in the export
       $exportLanguage = sfContext::getInstance()->user->getCulture();
@@ -106,8 +120,16 @@ class eadExportTask extends sfBaseTask
       $output = ob_get_contents();
       ob_end_clean();
 
-      $filename = 'ead_'. $row['id'] .'.xml';
-      $filePath = $arguments['folder'] .'/'. $filename;
+      if (isset($options['single-id']))
+      {
+        $filePath = $arguments['path'];
+      }
+      else
+      {
+        $filename = 'ead_'. $id .'.xml';
+        $filePath = $arguments['path'] .'/'. $filename;
+      }
+
       file_put_contents($filePath, $output);
 
       print '.';

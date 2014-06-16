@@ -60,30 +60,10 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       $exportLanguage = sfContext::getInstance()->user->getCulture();
       $sourceLanguage = $resource->getSourceCulture();
 
-      //$ead = new sfEadPlugin($resource);
-
-      // Kludge mirrored from export:bulk task
-      /*
-      ob_start();
-      include $appRoot . '/plugins/sfEadPlugin/modules/sfEadPlugin/templates/indexSuccess.xml.php';
-      $eadFileString = ob_get_contents();
-      ob_end_clean();
-
-      if (!strlen($eadFileString))
-      {
-        $this->log('Error generating EAD file.');
-        return false;
-      }
-      */
       $eadFileHandle = tmpfile();
       $foFileHandle = tmpfile();
 
-      error_reporting(E_ALL);
-      $exportTask = new eadExportTask($this->dispatcher, new sfFormatter);
-      $exportTask->run("--criteria=' i.id=$resource->id' /tmp/ead/");
-      die;
-
-      if ($eadFileHandle === FALSE || $foFileHandle === FALSE)
+      if (!$eadFileHandle || !$foFileHandle)
       {
         $this->log('Failed to create temporary file.');
         $this->setStatus(false);
@@ -93,8 +73,15 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       $eadFilePath = $this->getTmpFilePath($eadFileHandle);
       $foFilePath = $this->getTmpFilePath($foFileHandle);
 
+      // Call generate EAD task
+      $exportTask = new eadExportTask($this->dispatcher, new sfFormatter);
+      $exportTask->run("--single-id=$resource->id $eadFilePath");
+
+      // Crank the XML through XSL stylesheet and fix header / fonds URL
       $eadXslFilePath = $appRoot . '/lib/task/pdf/ead-pdf.xsl';
       $saxonPath = $appRoot . '/lib/task/pdf/saxon9he.jar';
+
+      $eadFileString = file_get_contents($eadFilePath);
 
       fprintf($eadFileHandle, "%s", $this->fixHeader($eadFileString,
         isset($options['url']) ? $options['url'] : null));
@@ -112,6 +99,7 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
         return false;
       }
 
+      // Use FOP generated in previous step to generate PDF
       exec(sprintf("fop -r -d -fo '%s' -pdf '%s'", $foFilePath, $pdfPath), $junk, $exitCode);
 
       if ($exitCode != 0)
