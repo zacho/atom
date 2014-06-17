@@ -65,8 +65,8 @@ class arGenerateFindingAid extends Net_Gearman_Job_Common
       $foFilePath = $this->getTmpFilePath($foFileHandle);
 
       // Call generate EAD task
-      $exportTask = new eadExportTask($this->dispatcher, new sfFormatter);
-      $exportTask->run("--single-id=$resource->id $eadFilePath");
+      unlink($eadFilePath);
+      exec("php $appRoot/symfony export:bulk --single-id=$resource->id $eadFilePath");
 
       // Crank the XML through XSL stylesheet and fix header / fonds URL
       $eadXslFilePath = $appRoot . '/lib/task/pdf/ead-pdf.xsl';
