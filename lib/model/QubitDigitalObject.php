@@ -1355,7 +1355,8 @@ class QubitDigitalObject extends BaseDigitalObject
     $uriComponents = parse_url($uri);
 
     // Initialize web browser
-    $browser = new sfWebBrowser(array(), null, array('Timeout' => 10));
+    $timeout = sfConfig::get("app_download_timeout");
+    $browser = new sfWebBrowser(array(), null, array('Timeout' => $timeout));
     $browser->get($uri);
 
     if ($browser->get($uri)->responseIsError() || 1 > strlen(($filename = basename($uriComponents['path']))))
@@ -1453,6 +1454,22 @@ class QubitDigitalObject extends BaseDigitalObject
   {
     return $this->getPath().$this->getName();
   }
+
+  /**
+   * Get public URL to asset; if asset path is a public URL,
+   * returns that path instead of constructing on the current server.
+   *
+   * @return string URL to asset
+   */
+  public function getPublicPath()
+  {
+    if ($this->usageId == QubitTerm::EXTERNAL_URI_ID) {
+      return $this->getPath();
+    } else {
+      return public_path($this->getFullPath(), true);
+    }
+  }
+
 
   /**
    * Get absolute path to asset
@@ -1634,9 +1651,7 @@ class QubitDigitalObject extends BaseDigitalObject
    * the id of the current digital object yet (i.e. it hasn't been saved to the
    * database yet), we pass the parent digital object or information object.
    *
-   * To keep to a minimum the number of sub-directories in the uploads dir,
-   * we break up information object path by using first and second digits of
-   * the information object id as sub-directories (e.g. uploads/3/2/3235/).
+   * The directory structure is based on the checksum of the master digital object.
    *
    * @return string  asset file path
    */
@@ -1656,21 +1671,32 @@ class QubitDigitalObject extends BaseDigitalObject
       throw new sfException('Couldn\'t find related information object for digital object');
     }
 
-    $id = (string) $infoObject->id;
-
-    // determine path for current repository
-    $repoDir = '';
-    if (null !== ($repo = $infoObject->getRepository(array('inherit' => true))))
+    if ($this->usageId == QubitTerm::MASTER_ID)
     {
-      $repoDir = $repo->slug;
+      $id = (string) $infoObject->id;
+
+      // determine path for current repository
+      $repoDir = '';
+      if (null !== ($repo = $infoObject->getRepository(array('inherit' => true))))
+      {
+        $repoDir = $repo->slug;
+      }
+      else
+      {
+        $repoDir = 'null';
+      }
+
+      return '/'.QubitSetting::getByName('upload_dir')->__toString().'/r/'.$repoDir.'/'.$checksum[0].'/'.$checksum[1].'/'.$checksum[2].'/'.$checksum;
     }
     else
     {
-      $repoDir = 'null';
+      if (!isset($this->parent))
+      {
+        throw new sfException('Got an orphaned derivative.');
+      }
+
+      return rtrim($this->parent->getPath(), '/');
     }
-
-
-    return '/'.QubitSetting::getByName('upload_dir')->__toString().'/r/'.$repoDir.'/'.$checksum[0].'/'.$checksum[1].'/'.$checksum;
   }
 
   /**

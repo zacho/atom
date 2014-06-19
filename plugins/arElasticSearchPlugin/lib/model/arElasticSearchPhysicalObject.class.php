@@ -17,31 +17,15 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Context menu for the repository logo
- *
- * @package AccesstoMemory
- * @subpackage repository
- */
-class RepositoryLogoComponent extends sfComponent
+class arElasticSearchPhysicalObject extends arElasticSearchModelBase
 {
-  public function execute($request)
+  public static function serialize($object)
   {
-    if (isset($request->getAttribute('sf_route')->resource))
-    {
-      $this->resource = $request->getAttribute('sf_route')->resource;
-    }
-    else
-    {
-      return sfView::NONE;
-    }
+    $serialized = array();
 
-    if ($this->resource instanceof QubitInformationObject)
-    {
-      if (null === $this->resource = $this->resource->getRepository(array('inherit' => true)))
-      {
-        return sfView::NONE;
-      }
-    }
+    $serialized['sourceCulture'] = $object->source_culture;
+    $serialized['i18n'] = self::serializeI18ns($object->id, array('QubitPhysicalObject'));
+
+    return $serialized;
   }
 }
