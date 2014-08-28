@@ -137,7 +137,7 @@
 
   <?php if (QubitInformationObject::ROOT_ID != $resource->parentId): ?>
     <?php $parent = QubitInformationObject::getById($resource->parentId); ?>
-    <relatedItem key id="<?php echo $parent->identifier ?>" type="constituent"><?php $parentMods = new sfModsPlugin($parent); echo esc_specialchars($parentMods) ?></relatedItem>
+    <relatedItem id="<?php echo $parent->identifier ?>" type="constituent"><?php $parentMods = new sfModsPlugin($parent); echo esc_specialchars($parentMods) ?></relatedItem>
   <?php endif; ?>
 
   <?php if (0 < count($resource->getChildren())): ?>
