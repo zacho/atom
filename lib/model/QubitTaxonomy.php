@@ -75,6 +75,11 @@ class QubitTaxonomy extends BaseTaxonomy
     THEMATIC_AREA_ID = 72,
     GEOGRAPHIC_SUBREGION_ID = 73;
 
+    // VRA core
+    VRA_CORE_AGENT_ROLE = 74;
+    VRA_CORE_DATE_TYPE = 75;
+    VRA_CORE_LOCATION_TYPE = 76;
+
   public static
     $lockedTaxonomies = array(
       self::QUBIT_SETTING_LABEL_ID,
