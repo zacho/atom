@@ -1,0 +1,59 @@
+// Place for site-wide modifications
+#content h2,
+.search-result .result-details li.reference-code,
+.breadcrumb li:after {
+  color: @cnsaGreen;
+}
+
+.search-result p.reference-code {
+  color: @cnsaGreen;
+  font-size: @baseFontSize * 0.90;
+  margin-top: -10px !important;
+}
+
+.repository-logo h2,
+.repository-logo img {
+  border: 0;
+  box-shadow: 0;
+  -webkit-box-shadow: none;
+  background-color: transparent;
+  min-height: inherit;
+}
+
+// Bottom editing bar
+.actions {
+  background-color: @cnsaGreenLight;
+}
+
+// because client didn't want title, add margin
+#popular-this-week {
+  margin-top: 40px;
+}
+
+// Hide creator name in Dates of Creation area
+.sfRadPlugin {
+  #datesOfCreationArea .date dl {
+    display: none;
+  }
+}
+
+// Hide the word "Holdings" entirely in repo view
+.sfIsdiahPlugin {
+  #sidebar .list-menu h4 {
+//    display: none;
+  }
+}
+
+// Default bg for repos without one specified
+.repository .brick-only-text {
+  background-image: url("/plugins/arCnsaPlugin/images/memns-default-repo-bg.png");
+  background-position: right bottom 15px;
+  background-size: 170px 170px;
+  background-repeat: no-repeat;
+
+  h4 {
+    min-height: 170px;
+    padding-top: 10px;
+    
+  }
+}

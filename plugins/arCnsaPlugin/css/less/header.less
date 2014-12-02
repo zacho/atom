@@ -1,0 +1,109 @@
+/*
+ * This file is part of the Access to Memory (AtoM) software.
+ *
+ * Access to Memory (AtoM) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Access to Memory (AtoM) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#top-bar {
+  background-color: @cnsaGreen;
+}
+
+#browse-menu > a,
+#site-slogan,
+// Targets all menu items
+#top-bar > nav > div > a:hover,
+#user-menu .top-item {
+  color: @cnsaGreen;
+  background-color: @cnsaGreenLight;
+  }
+
+// Hover states of above
+.open > a.top-dropdown,
+#browse-menu > a:hover,
+#user-menu .top-item:hover {
+  color: @white;
+  // arDominion has !important, need to overwrite
+  background-color: @cnsaGreenDark !important;
+  }
+
+// Login font colour
+#user-menu .top-item {
+  color: @white;
+}
+
+// Search input
+#search-bar #search-form-wrapper input {
+  background-color: @white;
+}
+
+header #logo {
+//  margin-left: 0;
+//  margin-right: 0;
+}
+
+header #site-name {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+
+// Top icons and other
+#quick-links-menu > a:before,
+#language-menu > a:before,
+#admin-menu > a:before,
+#import-menu > a:before,
+#manage-menu > a:before,
+#add-menu > a:before {
+  color: @cnsaGreenLight;
+}
+
+.search-popover {
+
+  ul {
+    padding-left: 8px;
+    margin-left: 0;
+  }
+
+  li {
+    margin: 0 0 2px 0;
+  }
+
+}
+
+@media (min-width: 980px) {
+
+  #search-bar #search-form-wrapper form {
+    width: 235px;
+  //width: inherit;
+  //margin-left: 25px;
+  }
+
+  .search-popover {
+    right: -90px;
+  }
+
+}
+
+@media (min-width: 1200px) {
+
+  #search-bar #search-form-wrapper form {
+    width: 300px;
+  }
+
+}
+
+
+
+
+
