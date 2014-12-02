@@ -137,7 +137,7 @@ class QubitInformationObject extends BaseInformationObject
 
           if (isset($repository->identifier))
           {
-            $identifier = "$repository->identifier $identifier";
+            $repocode = "$repository->identifier";
           }
 
           if (isset($repository))
@@ -145,8 +145,13 @@ class QubitInformationObject extends BaseInformationObject
             $countryCode = $repository->getCountryCode();
             if (isset($countryCode))
             {
-              $identifier = "$countryCode $identifier";
+              $repocode = "$countryCode $repocode";
             }
+          }
+
+          if (!empty($repocode))
+          {
+            $identifier = "[$repocode] $identifier";
           }
 
           return $identifier;
