@@ -8,7 +8,7 @@
           <strong><?php echo $levelsOfDescription[current($hit->levelOfDescriptionId)] ?></strong>
         </li>
       <?php endforeach; ?>
-      <?php if ($descriptions->getTotalHits() > 3): ?>
+      <?php if ($descriptions->getTotalHits() > 6): ?>
         <li class="showall"><?php echo link_to(__('all matching descriptions'), array('module' => 'search', 'action' => 'index') + $sf_request->getParameterHolder()->getAll()) ?></li>
       <?php endif; ?>
     </ul>
